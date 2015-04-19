@@ -1,0 +1,35 @@
+File Manager System.
+
+1.Funcationality
+	1.1 using configure file to manager the listen port, user and password.
+	1.2 offered the 'file echo' funcation, examplie:
+		when client enter: $ls foo*
+		server returned  : foobar		[command line]
+				foobar 		foobar.a	foobar.b
+	1.3 encrypted the file or messgae by translated.
+	1.4 support command as the following:
+		ls    pwd    cd    down    up    exit  
+
+2.Implementation
+	2.1 about the 'echo' funcation, when client press the 'Tab', send the
+	command message to server. then, server reads all file under the path
+	by command line specified. and return pattern string to client. if no
+	any file was patterned, client will be bell.
+
+	2.2 the password will be encrypted something like linux shadow file 
+	'/etc/passwd'.
+	2.3 client useage:
+		./fims server-IP [Port]
+		[if connect was success, then will enter interactive mode]
+				[user@IP]$
+	2.4 authentication about user, client will encrypted the password before
+	send to the server.	
+	2.5 the formats of data:
+		struct request {
+			int req;		/* requests code */
+			long len; 		
+		};
+Comments:
+	default server port will be: 40325
+	configure files of server includes 'passwd' and 'server.conf'.
+
