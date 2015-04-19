@@ -8,3 +8,4 @@ PROGRESS:
 					Modify the comments structure and style.
 	5.2015/04/16	Aodify the auth.c for multi-thread safe. Implement the
 					download module.
+	6.2015/04/19	Add install and uninstall options to Makefile

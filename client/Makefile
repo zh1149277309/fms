@@ -22,6 +22,15 @@ process_response.o: process_response.c process_response.h
 common.o: common.c common.h
 	$(CC) -c $^ $(FLAGS)
 
+install:
+	mkdir /usr/share/fmsclient/
+	cp ./fmsclient /usr/share/fmsclient/
+	ln -s /usr/share/fmsclient/fmsclient /bin/
+
+uninstall:
+	$(RM) -r /usr/share/fmsclient/
+	$(RM) /bin/fmsclient
+
 clean:
 	$(RM) $(OBJ) $(PROGS)
 	$(RM) $(wildcard *.h.gch)

@@ -44,6 +44,18 @@ process_upload.o: process_upload.c process_upload.h
 	$(CC) -c $^ $(FLAGS)
 
 
+install:
+	mkdir /usr/share/fmsserver
+	cp ./fmspasswd /usr/share/fmsserver/
+	cp ./fmsserver /usr/share/fmsserver/
+	cp server.conf /usr/share/fmsserver/
+	ln -s /usr/share/fmsserver/fmspasswd /bin/
+	ln -s /usr/share/fmsserver/fmsserver /bin/
+
+uninstall:
+	$(RM) -r /usr/share/fmsserver/
+	$(RM) /bin/fmsserver /bin/fmspasswd
+
 clean:
 	$(RM) $(OBJ) $(PROGS)
 	$(RM) $(wildcard *.h.gch)

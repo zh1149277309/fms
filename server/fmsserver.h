@@ -55,7 +55,7 @@ struct data {
 
 
 #define PORT	40325		/* default port number and configure file*/
-#define CONF_FILE 	"server.conf"
+#define CONF_FILE 	"/usr/share/fmsserver/server.conf"
 #define PASS_FILE	"passwd"
 
 

@@ -151,7 +151,10 @@ static void server_init(char *file)
 	char *p;
 	
 	bzero(&conf, sizeof(conf));	
-	conf_init(file);
+	
+	if (conf_init(file) == -1)
+		err_exit(0, "conf_init failed");
+		
 	while (conf_read(name, BUFSZ, val, BUFSZ) == 0) {
 		if (strcmp("port", name) == 0)
 			conf.port = (unsigned short)atoi(val);
