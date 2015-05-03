@@ -3,7 +3,7 @@ OBJ=err_handler.o auth.o conf.o process.o recv_request.o send_response.o \
 	process_request.o process_cd.o common.o process_mkdir.o process_rm.o \
 	process_ls.o process_pwd.o process_download.o process_upload.o
 CC=gcc
-FLAGS=-Wall -lpthread -g -D__DEBUG__
+FLAGS=-Wall -lpthread -g $(DEBUG)
 
 ALL: $(PROGS)
 
@@ -19,8 +19,8 @@ fmspasswd: fmspasswd.c
 
 install:
 	mkdir /usr/share/fmsserver
-	cp ./fmspasswd /usr/share/fmsserver/
-	cp ./fmsserver /usr/share/fmsserver/
+	cp fmspasswd /usr/share/fmsserver/
+	cp fmsserver /usr/share/fmsserver/
 	cp server.conf /usr/share/fmsserver/
 	ln -s /usr/share/fmsserver/fmspasswd /bin/
 	ln -s /usr/share/fmsserver/fmsserver /bin/
