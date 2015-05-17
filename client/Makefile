@@ -14,7 +14,7 @@ fmsclient: fmsclient.c debug.h fmsclient.h err_handler.o send_request.o \
 
 install:
 	mkdir /usr/share/fmsclient/
-	cp ./fmsclient /usr/share/fmsclient/
+	cp fmsclient /usr/share/fmsclient/
 	ln -s /usr/share/fmsclient/fmsclient /bin/
 
 uninstall:
