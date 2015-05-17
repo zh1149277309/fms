@@ -41,7 +41,7 @@ static void help(char *progname)
 
 
 
-/* 	All requests of clients, will be processed under this session */
+/* All requests of clients, will be processed under this session */
 static void *session(void *_fd)
 {
 	int fd = *((int *)_fd);
@@ -56,15 +56,15 @@ static void *session(void *_fd)
 	strcpy(attr.cwd, conf.rootdir);
 	strcat(attr.cwd, "/");
 	
-/*	pthread_cleanup_push(cleanup_thread, _fd);
+	/*pthread_cleanup_push(cleanup_thread, _fd);
 	pthread_cleanup_pop(0);	*/	
 	
 	if (auth(&attr) == -1)		/* User authentication failed */
 		err_thread_exit(fd, 0, "authentication was failed");
 
-	/* 	NOTE: 
-	 *		if encounter the end of stream, it will return 0, exit by 
-	 * 		reciving the REQ_EXIT request from clients */			
+	/* NOTE: 
+	 * if encounter the end of stream, it will return 0, exit by 
+	 * reciving the REQ_EXIT request from clients */			
 	while (1) {
 		recv_request(&attr);	/* include header and data */
 		if (process_request(&attr) == REQ_EXIT)
@@ -96,8 +96,8 @@ static void new_thread(const int *fd)
 
 
 
-/* 	Listen the port for accept the requests from the client, default:
- *	PROT=40325 */
+/* Listen the port for accept the requests from the client, default:
+ * PROT=40325 */
 static void conn_listen(unsigned short port)
 {
 	int flags;
@@ -108,7 +108,7 @@ static void conn_listen(unsigned short port)
 	if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
 		err_exit(errno, "socket");
 	
-	/* 	Use SO_REUSEADDR to reuse local addresses, if it's not active */
+	/* Use SO_REUSEADDR to reuse local addresses, if it's not active */
 	flags = 1;
 	if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, (void *)&flags, 
 			sizeof(flags)) == -1)
@@ -120,31 +120,32 @@ static void conn_listen(unsigned short port)
 	serv_in.sin_addr.s_addr = INADDR_ANY;
 		
 	if (bind(sockfd, (struct sockaddr *)&serv_in, 
-					(socklen_t)sizeof(struct sockaddr_in)) == -1)
+			(socklen_t)sizeof(struct sockaddr_in)) == -1)
 		err_exit(errno, "bind");
 		
 	if (listen(sockfd, 100) == -1)
 		err_exit(errno, "listen");
 	
-	/* 	Start to listen the port, and accept the request */	
+	/* Start to listen the port, and accept the request */	
 	clilen = sizeof(cli_in);
 	while (1) {		
 		while ((fd = malloc(sizeof(int))) == NULL);
-			
-		if ((*fd = accept(sockfd, (struct sockaddr *)&cli_in, &clilen)) == -1)
+		
+		*fd = accept(sockfd, (struct sockaddr *)&cli_in, &clilen);
+		if (*fd == -1)
 			err_msg(errno, "accept");
 	
-	/* 	Create a new thread to process this connection --- Iterations */
+	/* Create a new thread to process this connection --- Iterations */
 		new_thread(fd);
 	}
 	
-	/* 	This will never be executed, odd! */
+	/* This will never be executed, odd! */
 	close(sockfd);
 }
 
 
 
-/* 	Read configrue settings from the file, and store them to 'struct conf' */
+/* Read configrue settings from the file, and store them to 'struct conf' */
 static void server_init(char *file)
 {
 	char name[BUFSZ], val[BUFSZ];
@@ -168,13 +169,13 @@ static void server_init(char *file)
 	
 	p = get_current_dir_name();
 	if (conf.port == 0)
-		conf.port = PORT;			/* Default PORT number 40325 */
+		conf.port = PORT;	/* Default PORT number 40325 */
 	if (*conf.rootdir == 0)
 		strcpy(conf.rootdir, p);
 	free(p);
 	
 	p = (conf.rootdir + strlen(conf.rootdir) - 1);
-	if (*p == '/')					/* Ensure no '/' end with rootdir */	
+	if (*p == '/')			/* Ensure no '/' end with rootdir */	
 		*p = 0;		
 	
 

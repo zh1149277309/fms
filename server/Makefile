@@ -1,19 +1,16 @@
 PROGS=fmspasswd	fmsserver
-OBJ=err_handler.o auth.o conf.o process.o recv_request.o send_response.o \
+OBJ=fmsserver.o err_handler.o auth.o conf.o recv_request.o send_response.o \
 	process_request.o process_cd.o common.o process_mkdir.o process_rm.o \
 	process_ls.o process_pwd.o process_download.o process_upload.o
 CC=gcc
-FLAGS=-Wall -lpthread -g $(DEBUG)
+FLAGS=-Wall -lpthread $(DEBUG)
 
 ALL: $(PROGS)
 
-fmsserver: fmsserver.c err_handler.o auth.o conf.o process_ls.o fmsserver.h \
-	recv_request.o send_response.o process_request.o process_cd.o	\
-	common.o process_pwd.o process_mkdir.o process_rm.o process_download.o \
-	process_upload.o
+fmsserver: $(OBJ)
 	$(CC) -o $@ $^ $(FLAGS)
 fmspasswd: fmspasswd.c
-	$(CC) -o $@ $^ $(FLAGS) -lcrypt 
+	$(CC) -o $@ $^ $(FLAGS) -lcrypt
 %.o: %.c %.h
 	$(CC) -c $^ $(FLAGS)
 

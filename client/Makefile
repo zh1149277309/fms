@@ -1,13 +1,12 @@
 PROGS=fmsclient
-OBJ=err_handler.o send_request.o recv_response.o set_request.op \
-	process_response.o common.o	set_request.o
-FLAGS=-Wall -lcrypt -D__DEBUG__
+OBJ=fmsclient.o err_handler.o send_request.o recv_response.o set_request.o \
+	process_response.o common.o set_request.o
+FLAGS=-Wall -lcrypt $(DEBUG)
 CC=gcc
 
 ALL: $(PROGS)
 
-fmsclient: fmsclient.c debug.h fmsclient.h err_handler.o send_request.o \
-	recv_response.o set_request.o process_response.o common.o
+fmsclient: $(OBJ)
 	$(CC) -o $@ $^ $(FLAGS)
 %.o: %.c
 	$(CC) -c $^ $(FLAGS)

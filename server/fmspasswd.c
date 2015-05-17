@@ -1,6 +1,6 @@
-/* 	#define __DEBUG__ */
+/* #define __DEBUG__ */
 #define _GNU_SOURCE		/* getopt_long() */
-#define _XOPEN_SOURCE	/* encrypt() */
+#define _XOPEN_SOURCE		/* encrypt() */
 #include <unistd.h>
 #include <getopt.h>
 #include <stdio.h>
