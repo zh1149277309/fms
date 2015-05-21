@@ -14,9 +14,9 @@
 #define DOWNLOAD_INCLUDE_DIR_NAME	0x01 /* Return the string after last dir */
 #define SEND_DL_ERR_TO_CLIENT(attr, msg, ...)	\
 	SEND_ERR_TO_CLIENT(attr, RESP_DOWNLOAD_ERR, msg, ##__VA_ARGS__);
-#define DOWNLOAD_ACCOMPLISH(attr)			\
-	attr->resp.code = RESP_DOWNLOAD_ACCOM;	\
-	attr->resp.len = 0;						\
+#define DOWNLOAD_FINISH(attr)			\
+	attr->resp.code = RESP_DATA_FINISH;	\
+	attr->resp.len = 0;			\
 	send_response(attr);
 
 
@@ -56,17 +56,18 @@ int process_download(struct client_attr *attr)
 	
 	if ((S_IFMT & sb.st_mode) == S_IFREG) {
 		transmit(attr, pathname, 0, 0);
-		DOWNLOAD_ACCOMPLISH(attr);
+		DOWNLOAD_FINISH(attr);
 		return 0;
 	} else if ((S_IFMT & sb.st_mode) == S_IFDIR) {
-		/*	Set where is the index of last directory name start */
+		/* Set where is the index of last directory name start */
 		if (set_dir_name_length(pathname, &dir_name_length) == -1)
 			return -1;
 		
 		download_recursive(attr, pathname, dir_name_length);
 		
-		/*  When all files was download success, send RESP_DOWNLOAD_FINISH */
-		DOWNLOAD_ACCOMPLISH(attr);
+		/* When all files was download success, send
+		 * RESP_DOWNLOAD_FINISH */
+		DOWNLOAD_FINISH(attr);
 		return 0;
 	} 
 	
@@ -97,10 +98,11 @@ static void download_recursive(struct client_attr *attr, char *path,
 		strcat(tmp, entry.d_name);	
 		
 		if (entry.d_type == DT_REG) {
-		/*  Is a regular file, Just transmit it to client */
-			transmit(attr, tmp, dir_name_length, DOWNLOAD_INCLUDE_DIR_NAME);
+		/* Is a regular file, Just transmit it to client */
+			transmit(attr, tmp, dir_name_length,
+					DOWNLOAD_INCLUDE_DIR_NAME);
 		} else if (entry.d_type == DT_DIR) {
-		/*	Is a directory, recursive to download all things on it */
+		/* Is a directory, recursive to download all things on it */
 			download_recursive(attr, tmp, dir_name_length);
 		}
 	}
@@ -111,7 +113,7 @@ static void download_recursive(struct client_attr *attr, char *path,
 
 
 
-/*  Download the file which pointed by "pathname" */
+/* Download the file which pointed by "pathname" */
 static int transmit(struct client_attr *attr, char *pathname, 
 		int dir_name_length, int flags)
 {
@@ -126,11 +128,12 @@ static int transmit(struct client_attr *attr, char *pathname,
 	}
 	
 	debug("Transmit: %s", pathname);
-	/* 	Write file length to client */
+
+	/* Length of the file */
 	attr->resp.len = 0;
 	length = lseek(fd, 0, SEEK_END);
 	attr->resp.code = RESP_DOWNLOAD;
-	memcpy(attr->data, &length, sizeof(size_t));			/* file length */
+	memcpy(attr->data, &length, sizeof(size_t));
 	attr->resp.len += sizeof(size_t);
 
 	if ((p = brevity_name(pathname, dir_name_length, flags)) == NULL) {
@@ -138,15 +141,19 @@ static int transmit(struct client_attr *attr, char *pathname,
 		return -1;
 	}
 	
+	/* Length of the file name */
 	n = strlen(p);
-	memcpy(attr->data + attr->resp.len, &n, sizeof(size_t));/* file name length */
-	attr->resp.len += sizeof(size_t);
+	memcpy(attr->data + attr->resp.len, &n, sizeof(size_t));
 	
-	memcpy(attr->data + attr->resp.len, p, n);				/* file name */
+	/* File name */
+	attr->resp.len += sizeof(size_t);
+	memcpy(attr->data + attr->resp.len, p, n);
+
+	/* Send file information to client */
 	attr->resp.len += n;
 	send_response(attr);
 	
-	/*  Write data to client */
+	/* Send the data to client */
 	lseek(fd, 0, SEEK_SET);
 	while ((attr->resp.len = read(fd, attr->data, BUFSZ - 1)) > 0) {
 		send_response(attr);
@@ -156,6 +163,7 @@ static int transmit(struct client_attr *attr, char *pathname,
 		err_msg(errno, "Download occur error");
 		return -1;	
 	}
+
 	close(fd);
 	return 0;
 }
@@ -182,20 +190,19 @@ static int set_dir_name_length(char *pathname, int *dir_name_length)
 }
 
 
-/*	Return the pointer which point to the suitable path name for client to 
- *	store it on success; Otherwise, return NULL;	Example:
- *	
- *	NOTE:	(This may helpful to implement download a whole directory) 
- *		if requested download string is a single file, whatever it is absolute
- *		path name or relative path name, it returns file name only, exclusive 
- *		path;	For example:
- *			$download foobar.c	[or]	$downloaod /path/to/foobar.c 
- *				RETURN	"foobar.c"
+/* Return the pointer which point to the suitable path name for client to 
+ * store it on success; Otherwise, return NULL;	Example:
+ * (This may helpful to implement download a whole directory) 
+ * 
+ * if requested download string is a single file, whatever it is absolute
+ * path name or relative path name, it returns file name only, exclusive path.
+ *	$download foobar.c	[or]	$downloaod /path/to/foobar.c 
+ *		RETURN	"foobar.c"
  *
- *		if requested string is a path, For example:
- *			$download ../dir/ 	[or]	$download /path/to/dir/
- *				RETURN dir/foobar.c  
- *	The function return string does not include last directory on default! */
+ * if requested string is a path, For example:
+ *	$download ../dir/ 	[or]	$download /path/to/dir/
+ *		RETURN dir/foobar.c  
+ * The function return string does not include last directory on default! */
 static char *brevity_name(char *pathname, int dir_name_length, int flags)
 {
 	if (flags == DOWNLOAD_INCLUDE_DIR_NAME) {

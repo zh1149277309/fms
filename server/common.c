@@ -196,8 +196,8 @@ char *cstring(unsigned int code)
 		RETURN("REQ_MKDIR");
 	case REQ_UPLOAD:
 		RETURN("REQ_UPLOAD");
-	case REQ_UPLOAD_ACCOM:
-		RETURN("REQ_UPLOAD_ACCOM");
+	case REQ_DATA_FINISH:
+		RETURN("REQ_DATA_FINISH");
 	case REQ_DOWNLOAD:
 		RETURN("REQ_DOWNLODA");
 	case REQ_EXIT:
@@ -220,8 +220,8 @@ char *cstring(unsigned int code)
 		RETURN("RESP_DOWNLOAD");
 	case RESP_DOWNLOAD_ERR:
 		RETURN("RESP_DOWNLOAD_ERR");
-	case RESP_DOWNLOAD_ACCOM:
-		RETURN("RESP_DOWNLOAD_ACCOM");
+	case RESP_DATA_FINISH:
+		RETURN("RESP_DATA_FINISH");
 	case RESP_UPLOAD:
 		RETURN("RESP_UPLOAD");
 	case RESP_UPLOAD_ERR:
@@ -245,11 +245,10 @@ char *cstring(unsigned int code)
 
 
 
-/*	NOTE:
- *		About space ' ' separate, since we using space as default separate, If
- *	we need input the space in the file name or path name, user should typed
- *	backslash '\' first and append space ' ' second, forms like:'"foo\ bar",
- *	the parsing result is "foo bar"*/
+/* About space ' ' separate, since we using space as default separate, If
+ * we need input the space in the file name or path name, user should typed
+ * backslash '\' first and append space ' ' second, forms like:'"foo\ bar",
+ * the parsing result is "foo bar"*/
 static void escape_space(char *buf)
 {
 	char *p, *p2;
@@ -257,19 +256,20 @@ static void escape_space(char *buf)
 	p2 = buf;
 	while ((p = strstr(p2, "\\ ")) != NULL) {
 		*p++ = 0;
-				
-		strcat(buf, p);	  /* p point to space ' ' which after backslash '\' */
+
+		/* p point to space ' ' which after backslash '\' */
+		strcat(buf, p);
 		p2 = buf;	
 	}
 }
 
-/* 	Return 0, if new path is security, otherwise, or -1 returned */
+/* Return 0, if new path is security, otherwise, or -1 returned */
 static int security_checking(struct client_attr *attr, char *path)
 {
 	int i;
 	struct stat sb;
 	
-	
+
 	debug("security_checking: %s VS %s", attr->rootdir, path);
 	i = strlen(attr->rootdir);
 	if (strncmp(attr->rootdir, path, i) != 0) 
@@ -282,7 +282,3 @@ static int security_checking(struct client_attr *attr, char *path)
 
 	return 0;
 }
-
-
-
-

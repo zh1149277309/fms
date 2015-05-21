@@ -36,19 +36,17 @@ int process_request(struct client_attr *attr)
 		process_rm(attr);
 		break;
 	case REQ_UPLOAD:
-		/*  NOTE:	(principle of upload)
-		 *		step1:	client(REQ_UPLOAD) --> server(RESP_UPLOAD) 
-		 *		step2:	client(files) --> server(files))
-		 *		step3:	client(REQ_UPLOAD_ACCOM --> server()) */
+		/* (principle of upload)
+		 *	step1:	client(REQ_UPLOAD) --> server(RESP_UPLOAD) 
+		 *	step2:	client(files) --> server(files))
+		 *	step3:	client(REQ_DATA_FINISH --> server()) */
+
+		/* Notify the client start to upload files */
 		attr->resp.code = RESP_UPLOAD;
-		attr->resp.len = attr->req.len;	/* Send data back to client */
+		attr->resp.len = attr->req.len;
 		send_response(attr);
 
-		recv_request(attr);
-		while (attr->req.code != REQ_UPLOAD_ACCOM) {
-			process_upload(attr);
-			recv_request(attr);
-		}
+		process_upload(attr);
 		break;
 	case REQ_DOWNLOAD:
 		process_download(attr);
@@ -60,7 +58,8 @@ int process_request(struct client_attr *attr)
 		return REQ_EXIT;
 		break;
 	default:
-		err_thread_exit(attr->fd, 0, "unrecognized command: %#X", attr->req.code);
+		err_thread_exit(attr->fd, 0, "unrecognized command: %#X",
+				attr->req.code);
 	}
 	
 	return 0;	/* Suppress warning, it never reach here */

@@ -11,40 +11,36 @@ static int getrequestype(char *s);
 static void strip_ws(char *cmd);
 
 
-/* 	NOTE:	
- *		How to parsing input data, and encode it to server?
- *
- *		Example:
- *			[test@127.0.0.1 /]$ ls /foo\ bar/test.c
- *		Step1:
- *			strip repeating space characters whichs are ' ', '\t', '\n'... 
- *		Step2:
- *			the first encountered space as separate CMD and ARGS 
- *		Step3:
- *			send it to server;	when server parsing it, (space ' ' as default
- *			separate also, but except the string which are "\ ")*/
+/* How to parsing input data, and encode it to server?
+ * Example:
+ *	[test@127.0.0.1 /]$ ls /foo\ bar/test.c
+ * Step1:
+ *	strip repeating space characters whichs are ' ', '\t', '\n'... 
+ * Step2:
+ *	the first encountered space as separate CMD and ARGS.
+ * Step3:
+ *	send it to server. (when server parsing it space ' ' as default
+ *	separate also, but except the string which are "\ ") */
 int set_request(char *cmd, struct server_attr *attr)
 {
 	char *p;
 	
-	strip_ws(cmd);							/* Step1 */
+	strip_ws(cmd);				/* Step1 */
 
 	*attr->data = 0;
 	attr->req.len = 0;	
 	if ((p = strchr(cmd, ' ')) != NULL) {	/* Step2 */
 		*p++ = 0;		
 	
-		strcpy(attr->data, p);				/* May include "\ " */
+		strcpy(attr->data, p);		/* May include "\ " */
 		attr->req.len = strlen(attr->data);
-		strcpy(attr->buf, p);				/* save current request data */
+		strcpy(attr->buf, p);		/* save current request data */
 	}
 	
 
 	attr->req.code = getrequestype(cmd);	/* Get request code */
 	if (attr->req.code == -1)
 		return -1;
-
-
 	
 	debug("cmd=(%s)", cmd);
 	debug("args (%s)", attr->data);
@@ -54,11 +50,11 @@ int set_request(char *cmd, struct server_attr *attr)
 
 
 
-/* 	Return request type on success, or return -1 on error */
+/* Return request type on success, or return -1 on error */
 static int getrequestype(char *s)
 {
-#define RETURN_REQ_TYPE(cmd_str, type)					\
-	if (strcmp(s, cmd_str) == 0)						\
+#define RETURN_REQ_TYPE(cmd_str, type)			\
+	if (strcmp(s, cmd_str) == 0)			\
 		return type;
 
 	RETURN_REQ_TYPE("ls", 		REQ_LS)
@@ -76,15 +72,15 @@ static int getrequestype(char *s)
 
 
 
-/* 	Strip the whitespace of the string cmd */
+/* Strip the whitespace of the string cmd */
 static void strip_ws(char *cmd)
 {
 	char buf[BUFSZ], *p, *p2;
 	int _is_first_run, _is_space, _is_space_first;
 	
-	/* 	NOTE: 
-	 *		Can not to increament of decrement the address of array;
-	 * 		buf++; 	or buf += 1; 	both are error on compiling  */
+	/* NOTE: 
+	 *	Can not to increament or decrement the address of array;
+	 *	buf++; 	or buf += 1; 	both are error on compiling  */
 	
 	p = buf;
 	p2 = cmd;
@@ -98,7 +94,7 @@ static void strip_ws(char *cmd)
 			p2++;
 			continue;
 		} else if (_is_space && _is_space_first) {
-			*p++ = ' ';				/* All whitespace instead by ' ' */
+			*p++ = ' ';	/* All whitespace instead by ' ' */
 			_is_space_first = 0;
 		} else if (!_is_space) { 
 			*p++ = *p2;

@@ -1,4 +1,4 @@
-/*	#define _BSD_SOURCE		Depreccated */
+/* #define _BSD_SOURCE		Depreccated */
 #define _DEFAULT_SOURCE	
 #include <unistd.h>
 #include <string.h>
@@ -15,9 +15,9 @@
 static int getpath(struct client_attr *attr, char *buf);
 
 
-/* 	I can using exec() sets to list files and directorys under current work
- * 	directory, but for shown the how to get informations about files, I decide
- * 	implements this function by myself */
+/* I can using exec() sets to list files and directorys under current work
+ * directory, but for shown the how to get informations about files, I decide
+ * implements this function by myself */
 void process_ls(struct client_attr *attr)
 {
 	int n;
@@ -27,7 +27,7 @@ void process_ls(struct client_attr *attr)
 	struct dirent *entry, *result;
 	
 
-	if (getpath(attr, path) == -1) {		/* Store full path name to buf */
+	if (getpath(attr, path) == -1) {/* Store full path name to buf */
 		SEND_ERR_TO_CLIENT(attr, RESP_LS_ERR, "Bad path");	
 		return;
 	}
@@ -39,9 +39,9 @@ void process_ls(struct client_attr *attr)
 		return;
 	}
 	
-	/* 	I'm not use pathconf(), I think this is ok */
-	if ((entry = malloc(offsetof(struct dirent, d_name) + 
-									NAME_MAX + 1)) == NULL) {
+	/* I'm not use pathconf(), I think this is ok */
+	if ((entry = malloc(offsetof(struct dirent, d_name) +
+			NAME_MAX + 1)) == NULL) {
 		err_msg(errno, "malloc");
 		goto process_ls_err_closedir;
 	}
@@ -51,22 +51,21 @@ void process_ls(struct client_attr *attr)
 	attr->resp.code = RESP_LS;
 	attr->resp.len = 0;
 	while ((readdir_r(dp, entry, &result) == 0) && result) {
-		if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0)
+		if (strcmp(entry->d_name, ".") == 0 ||
+				strcmp(entry->d_name, "..") == 0)
 			continue;
-		
+
 		strcpy(buf, entry->d_name);
 		if (entry->d_type == DT_DIR)	/* DT_DIR not bit mask */
 			strcat(buf, "/");
 		strcat(buf, ":");
-		
-		
+
+
 		n = strlen(buf);
-		if (attr->resp.len + n + 1 >= BUFSZ) {
+		if (attr->resp.len + n >= BUFSZ) {
 			send_response(attr);
-			
-			*attr->data = 0;
-			strcat(attr->data, buf);	
-			attr->resp.len = n;			/* Reset length of data */
+			strcpy(attr->data, buf);	
+			attr->resp.len = n;	/* Reset length of data */
 		} else {
 			strcat(attr->data, buf);
 			attr->resp.len += n;
@@ -74,6 +73,11 @@ void process_ls(struct client_attr *attr)
 	}
 	
 	closedir(dp);
+	send_response(attr);
+
+	/* Send the RESP_DATA_FINISH flag to client */
+	attr->resp.code = RESP_DATA_FINISH;
+	attr->resp.len = 0;
 	send_response(attr);
 	return;
 	

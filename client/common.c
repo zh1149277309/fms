@@ -10,21 +10,13 @@ static void escape_space(char *buf);
 
 char *get_upload_file(struct server_attr *attr, char *pathname)
 {
+	if ((resolve_path(attr, pathname) == -1) ||
+			(depth_resolve_path(attr, pathname) == -1))
+		return NULL;
 	
-	if (resolve_path(attr, pathname) == -1){
-	/*	SEND_ERR_TO_CLIENT(attr, RESP_DOWNLOAD_ERR, "Missing operand");	*/
-		return NULL;
-	}
-
-	if (depth_resolve_path(attr, pathname) == -1) {
-	/*	SEND_ERR_TO_CLIENT(attr, RESP_DOWNLOAD_ERR, "Download failed");	*/
-		return NULL;
-	}
-		
 	debug("Upload file: %s", pathname);
 	return pathname;
 }
-
 
 
 int resolve_path(struct server_attr *attr, char *path)
@@ -34,21 +26,19 @@ int resolve_path(struct server_attr *attr, char *path)
 
 	escape_space(attr->data);
 	cwd = get_current_dir_name();
-	
-	
+
 	if (*attr->data == '/') {			/* ls /absolute/path */
 		strcpy(path, attr->data);
-		
 	} else {		
 		strcpy(path, cwd);
 
-		if (*(path + strlen(path) - 1) != '/')		/* add '/' if necessary */
+		if (*(path + strlen(path) - 1) != '/')
 			strcat(path, "/");	
 		strcat(path, attr->data);
-		
+
 		i = strlen(path) - 1;
 		if (*(path + i) == '/')
-			*(path + i) = 0;			/* ensure no '/' end with path */
+			*(path + i) = 0;/* ensure no '/' end with path */
 	}
 
 	free(cwd);
@@ -63,34 +53,26 @@ int depth_resolve_path(struct server_attr *attr, char *path)
 	char c1, c2;
 
 	strcpy(tmp, path);
-	while (1) {
-		if ((p = strstr(path, "..")) != NULL) {	
-			*(p - 1) = 0;
-			if ((p2 = strrchr(path, '/')) != NULL) 
-				*p2 = 0;
-			else
-				break;		
+	while ((p = strstr(path, "..")) != NULL) {
+		*(p - 1) = 0;
+		if ((p2 = strrchr(path, '/')) != NULL) 
+			*p2 = 0;
+		else
+			break;		
 
-			strcpy(tmp, path);
-			strcat(tmp, p + 2);
-			strcpy(path, tmp);
-
-		} else {
-			strcpy(path, tmp);
-			break;
-		}
+		strcpy(tmp, path);
+		strcat(tmp, p + 2);
+		strcpy(path, tmp);
 	}
-	
-	 
+
 	p2 = path;
 	while ((p = strchr(p2, '.')) != NULL) {
 		c1 = *(p - 1);
 		c2 = *(p + 1);
 
-		if (( c1>= 'A' && c2 <= 'Z') || (c1 >= 'a' && c2 <= 'z'))	
+		if (( c1>= 'A' && c2 <= 'Z') || (c1 >= 'a' && c2 <= 'z')) {
 			p2 = p + 1;
-
-		if (c1 == '/'	&& c2 == '/') {
+		} if (c1 == '/' && c2 == '/') {
 			*(p - 1) = 0;
 			strcpy(tmp, path);
 			strcat(tmp, p + 2);
@@ -108,21 +90,19 @@ int depth_resolve_path(struct server_attr *attr, char *path)
 }
 
 
-
-/* 	Return converted request or response string on success, or NULL if allocate
- *	memory failure, The caller should free it after use finished */
+/* Return converted request or response string on success, or NULL if allocate
+ * memory failure, The caller should free it after use finished */
 char *cstring(unsigned int code)
 {
-/* 	Support variable arguments, don't warry about the performance; */
-#define RETURN(str, ...) 						\
-	do {										\
-		char *s;								\
-		while ((s = malloc(BUFSZ)) == NULL);	\
+/* Support variable arguments, don't warry about the performance; */
+#define RETURN(str, ...) 					\
+	do {							\
+		char *s;					\
+		while ((s = malloc(BUFSZ)) == NULL);		\
 		sprintf(s, str, ##__VA_ARGS__);			\
-		return s;								\
+		return s;					\
 	} while (0)							
-	
-	
+
 	switch (code) {
 	case REQ_AUTH:
 		RETURN("REQ_AUTH");
@@ -136,12 +116,12 @@ char *cstring(unsigned int code)
 		RETURN("REQ_MKDIR");
 	case REQ_UPLOAD:
 		RETURN("REQ_UPLOAD");
-	case REQ_UPLOAD_ACCOM:
-		RETURN("REQ_UPLOAD_ACCOM");
 	case REQ_DOWNLOAD:
 		RETURN("REQ_DOWNLODA");
 	case REQ_EXIT:
 		RETURN("REQ_EXIT");
+	case REQ_DATA_FINISH:
+		RETURN("REQ_DATA_FINISH");
 	case RESP_AUTH_OK:
 		RETURN("RESP_AUTH_OK");
 	case RESP_AUTH_ERR:
@@ -160,8 +140,8 @@ char *cstring(unsigned int code)
 		RETURN("RESP_DOWNLOAD");
 	case RESP_DOWNLOAD_ERR:
 		RETURN("RESP_DOWNLOAD_ERR");
-	case RESP_DOWNLOAD_ACCOM:
-		RETURN("RESP_DOWNLOAD_ACCOM");
+	case RESP_DATA_FINISH:
+		RETURN("RESP_DATA_FINISH");
 	case RESP_UPLOAD:
 		RETURN("RESP_UPLOAD");
 	case RESP_UPLOAD_ERR:
@@ -187,15 +167,12 @@ char *cstring(unsigned int code)
 static void escape_space(char *buf)
 {
 	char *p, *p2;
-	
+
 	p2 = buf;
 	while ((p = strstr(p2, "\\ ")) != NULL) {
 		*p++ = 0;
-				
-		strcat(buf, p);	  /* p point to space ' ' which after backslash '\' */
+		/* p point to space ' ' which after backslash '\' */
+		strcat(buf, p);
 		p2 = buf;	
 	}
 }
-
-
-

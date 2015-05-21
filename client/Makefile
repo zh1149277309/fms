@@ -1,7 +1,7 @@
 PROGS=fmsclient
 OBJ=fmsclient.o err_handler.o send_request.o recv_response.o set_request.o \
-	process_response.o common.o set_request.o
-FLAGS=-Wall -lcrypt $(DEBUG)
+	process_response.o common.o set_request.o fms_completion.o
+FLAGS=-Wall -lcrypt -lreadline -lncurses $(DEBUG)
 CC=gcc
 
 ALL: $(PROGS)

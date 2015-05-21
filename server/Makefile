@@ -19,12 +19,14 @@ install:
 	cp fmspasswd /usr/share/fmsserver/
 	cp fmsserver /usr/share/fmsserver/
 	cp server.conf /usr/share/fmsserver/
+	cp passwd /usr/share/fmsserver/
 	ln -s /usr/share/fmsserver/fmspasswd /bin/
 	ln -s /usr/share/fmsserver/fmsserver /bin/
 
 uninstall:
 	$(RM) -r /usr/share/fmsserver/
-	$(RM) /bin/fmsserver /bin/fmspasswd
+	$(RM) /bin/fmsserver
+	$(RM) /bin/fmspasswd
 
 clean:
 	$(RM) $(OBJ) $(PROGS)

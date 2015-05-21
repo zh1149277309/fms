@@ -16,8 +16,10 @@ void process_upload(struct client_attr *attr)
 	int fd;
 	size_t length, n;
 	char pathname[PATH_MAX + NAME_MAX + 1];
-	
-	/* 	Format: | size_t file-length | size_t file-name-length | file-name | */
+
+
+download_next:	
+	/* Format: | size_t file-length | size_t file-name-length | file-name */
 	length = *((int *)attr->data);		
 	n = *((int *)(attr->data + sizeof(size_t)));
 	
@@ -29,14 +31,14 @@ void process_upload(struct client_attr *attr)
 	strncat(pathname, (attr->data + sizeof(size_t) * 2), n);
 
 	
-	create_upload_dir(attr, pathname);		/* create directory if necessary */
+	create_upload_dir(attr, pathname);/* create directory if necessary */
 	debug("file: %s, length: %ld", pathname, length);
-
 		
 	/* Overwrite exist file */
 	if ((fd = open(pathname, O_WRONLY | O_CREAT, 
 				DEFAULT_UPLOAD_FILE_MODE)) == -1) {
-		err_msg(errno, "Error for open %s", pathname);	
+		err_msg(errno, "Error for open %s", pathname);
+		return;
 	}
 	
 
@@ -47,6 +49,10 @@ void process_upload(struct client_attr *attr)
 	}
 	
 	close(fd);
+
+	recv_request(attr);
+	if (attr->req.code != REQ_DATA_FINISH)
+		goto download_next;
 }
 
 
