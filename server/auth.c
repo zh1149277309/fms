@@ -64,20 +64,19 @@ int auth(struct client_attr *attr)
 	strcpy(attr->usrinfo.pwd, p);
 	
 	debug("user=(%s), pwd=(%s)", attr->usrinfo.user, attr->usrinfo.pwd);
-	auth_ok = is_auth_ok(attr->passfile, attr->usrinfo.user, attr->usrinfo.pwd);
-		
-		
-	if (auth_ok)	/* Response message to client, for authentication success */
+	auth_ok = is_auth_ok(attr->passfile, attr->usrinfo.user,
+		attr->usrinfo.pwd);
+
+	/* Response message to client, for authentication success */
+	if (auth_ok)
 		attr->resp.code = RESP_AUTH_OK;
 	else
 		attr->resp.code = RESP_AUTH_ERR;
-		
-		
+
+
 	attr->resp.len = 0;
-/*	if (write(attr->fd, &resp, sizeof(resp)) != sizeof(resp))
-		err_thread_exit(attr->fd, errno, "write");	*/
  	send_response(attr);
-		
+	
 	return auth_ok ? 0 : -1;	
 }
 

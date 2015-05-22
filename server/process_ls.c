@@ -27,7 +27,8 @@ void process_ls(struct client_attr *attr)
 	struct dirent *entry, *result;
 	
 
-	if (getpath(attr, path) == -1) {/* Store full path name to buf */
+	/* Resolving the  */
+	if (getpath(attr, path) == -1) {
 		SEND_ERR_TO_CLIENT(attr, RESP_LS_ERR, "Bad path");	
 		return;
 	}
@@ -89,13 +90,13 @@ process_ls_err_closedir:
 
 
 
-/* 	Return 0 on success,  or security-checking() failed, return -1 */
+/* Return 0 on success,  or security-checking() failed, return -1 */
 static int getpath(struct client_attr *attr, char *path)
 {
-	/* 	It never return fails, since it req.len may be zero */
+	/* It never return fails, since it req.len may be zero */
 	resolve_path(attr, path);
 	
-	/* 	Multiple .. are specified */	
+	/* Multiple .. are specified */	
 	if (depth_resolve_path(attr, path) == -1)
 		return -1;	
 		
@@ -104,13 +105,12 @@ static int getpath(struct client_attr *attr, char *path)
 }
 
 
-
-
-/* 	NOTE: 
- *		FOLLING METHODS ARE DEPRECATED. 
- * 	For make data tranlsate simple, If data size is more larger than BUFSZ
+/* NOTE: 
+ *	FOLLING METHODS ARE DEPRECATED. 
+ *	For make data tranlsate simple, If data size is more larger than BUFSZ
  * 	(1024), It will be separated BUFSZ packages sends to client.
- * 	instead by: send_response(), recv_request() */ /*
+ * 	instead by: send_response(), recv_request() 
+ *//*
 static void write_data_to_client(struct client_attr *attr, 
 							struct data *data, unsigned long len)
 {

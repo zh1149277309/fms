@@ -179,13 +179,19 @@ int main(int argc, char **argv)
 			getcwdpr(attr.cwd));
 		cmd = readline(buf);	
 
+		/* Add those commands to history */
+		if (cmd && *cmd)
+			add_history(cmd);
+
 		if (set_request(cmd, &attr) == -1) {
 			printf("Command not found...\n");
 			continue;
 		}
 
 		free(cmd);
-		send_request(&attr);	/* Send request to server */
+
+		/* Send request to server */
+		send_request(&attr);
 		recv_response(&attr);
 		if (process_response(&attr) == RESP_EXIT)
 			break;
