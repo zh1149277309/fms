@@ -83,13 +83,12 @@ static void new_thread(const int *fd)
 {
 	int s;
 	pthread_t thread;
-	
+
 	if ((s = pthread_create(&thread, NULL, session, (void *)fd)) != 0) {
 		err_msg(s, "pthread_create");
 		return;
 	}
 
-		
 	if ((s = pthread_detach(thread)) != 0)
 		err_msg(s, "pthread_join");
 }

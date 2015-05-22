@@ -62,60 +62,62 @@ int resolve_path(struct client_attr *attr, char *path)
  *	Example:
  * 	/var/fms/test/a/../../ 
  *		step1: /var/fms/test/../
- * 	step2: /var/fms/test/			*/
+ * 		step2: /var/fms/			*/
 int depth_resolve_path(struct client_attr *attr, char *path)
 {
 	char tmp[PATH_MAX];
 	char *p, *p2;
 	char c1, c2;
 
-	strcpy(tmp, path);
+	/* Now, path point to the relative path */
+	path = path + strlen(attr->rootdir);
 	while (1) {
-		if ((p = strstr(path, "..")) != NULL) {	
-			*(p - 1) = 0;
-			if ((p2 = strrchr(path, '/')) != NULL) 
-				*p2 = 0;
-			else
-				break;		
-
-			strcpy(tmp, path);
-			strcat(tmp, p + 2);
-			strcpy(path, tmp);
-
-		} else {
-			strcpy(path, tmp);
+		/* Following if statement showing three situations, them are:
+		 * not ".." specified, "foo..", "foo/..bar" */
+		if ((p = strstr(path, "..")) == NULL ||
+				*(p - 1) != '/' ||
+				(*(p + 2) != '/' && *(p + 2) != 0))
 			break;
-		}
+
+		*(p - 1) = 0;
+		if ((p2 = strrchr(path, '/')) != NULL) 
+			*p2 = 0;
+
+		strcpy(tmp, path);
+		strcat(tmp, p + 2);
+		strcpy(path, tmp);
 	}
-	
+
 	/* Removeing the character '.' in the path 
 	 * Example:
 	 *	/foo/bar/.		REMOVE		
-	 *	./foo/bar 	REMOVE	
+	 *	./foo/bar 		REMOVE	
 	 *	/foo/./bar		REMOVE	
 	 *	/foo.bar		OK		*/
-	 
 	p2 = path;
 	while ((p = strchr(p2, '.')) != NULL) {
 		c1 = *(p - 1);
 		c2 = *(p + 1);
 
-		if (( c1>= 'A' && c2 <= 'Z') || (c1 >= 'a' && c2 <= 'z'))	
-			p2 = p + 1;
-
-		if (c1 == '/'	&& c2 == '/') {
-			*(p - 1) = 0;
+		if (c1 == '/' && c2 == '/') {
+			*p = 0;
 			strcpy(tmp, path);
 			strcat(tmp, p + 2);
 			strcpy(path, tmp);
 		} else if (c1 == '/') {
 			*(p - 1) = 0;
 		} else if (c2 == '/') {
-			strcpy(tmp, p + 2);
-			strcpy(path, tmp);
+			strcpy(path, p + 2);
 		}
+		
+		p2 = p + 1;
 	}
 
+	/* Relative path must start with '/' */
+	if (*path == 0)
+		strcat(path, "/");
+
+	path = path - strlen(attr->rootdir);
 	/* Security-checking failed */
 	if (security_checking(attr, path) == -1)
 		return -1;
@@ -123,9 +125,9 @@ int depth_resolve_path(struct client_attr *attr, char *path)
 	/* If not any string in attr->cwd, the security-checking is okay, but
 	 * we need add root string "/" to the attr->cwd, ensure the mechanism
 	 * work correctly that all depends on it */
-	if (strcmp(attr->rootdir, path) == 0) {		
-		strcat(path, "/");
-	}
+//	if (strcmp(attr->rootdir, path) == 0) {		
+//		strcat(path, "/");
+//	}
 
 	debug("path: (%s)", path);
 	return 0;
@@ -277,15 +279,16 @@ static int security_checking(struct client_attr *attr, char *path)
 	struct stat sb;
 	
 
-	debug("security_checking: %s VS %s", attr->rootdir, path);
+	debug("security_checking: root=%s, path=%s", attr->rootdir, path);
 	i = strlen(attr->rootdir);
 	if (strncmp(attr->rootdir, path, i) != 0) 
 		return -1;
 
 	/* ls command only support argument is directory, not files */
-	if (attr->req.code == REQ_CD || attr->req.code == REQ_LS)	
+	/*if (attr->req.code == REQ_CD || attr->req.code == REQ_LS)	
 		if (stat(path, &sb) != 0 || (sb.st_mode & S_IFMT) != S_IFDIR)
-			return -1;	
+			return -1;
+	*/
 
 	return 0;
 }

@@ -12,7 +12,7 @@ inline void recv_request(struct client_attr *attr)
 {
 /*	debug("reciving request header...");	*/
 	recv_request_header(attr);
-/*	debug("reciving request data...");		*/
+/*	debug("reciving request data...");	*/
 	recv_request_data(attr);
 }
 
@@ -49,10 +49,9 @@ void recv_request_header(struct client_attr *attr)
 	while ((n = read(attr->fd, p, byte)) < byte) {
 		if (n < 0)		/* Error encountered */
 			err_thread_exit(attr->fd, errno, "read");
-		else if (n == 0)	/* no data arrive */
-			continue;	/* NEED IMPLEMENT TO SLEEP */
-		
-		
+		else if (n == 0)	/* End-of-file */
+			err_thread_exit(attr->fd, 0, "client closed");
+
 		p += n;
 		byte -= byte;
 

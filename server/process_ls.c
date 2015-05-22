@@ -29,7 +29,7 @@ void process_ls(struct client_attr *attr)
 
 	/* Resolving the  */
 	if (getpath(attr, path) == -1) {
-		SEND_ERR_TO_CLIENT(attr, RESP_LS_ERR, "Bad path");	
+		SEND_ERR_TO_CLIENT(attr, RESP_LS_ERR, "Bad path");
 		return;
 	}
 

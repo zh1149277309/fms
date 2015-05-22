@@ -1,0 +1,12 @@
+1.2015/04/04	Starting to writes headers and fms_passwd program.
+2.2015/04/05	Rewrite the code, and modules. fms_passwd completed.
+3.2015/04/13	Server and Client main program completed. Only support
+		ls, cd, pwd commands.
+4.2015/04/14	Add mkdir command, for client can create the directory.
+		Add rm command. Add root privilege checking. Code
+		refactoring. Modify the comments structure and style.
+5.2015/04/16	Aodify the auth.c for multi-thread safe. Implement the
+		download module.
+6.2015/04/19	Add install and uninstall options to Makefile
+7.2015/05/22	Add auto-completion by using GNU Readline library.
+

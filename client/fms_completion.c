@@ -11,7 +11,6 @@ static char *file_list(const char *text);
 char **fms_completion(const char *text, int start, int end);
 char *fms_command_generator(const char *text, int state);
 char *fms_server_file_generator(const char *text, int state);
-char *fms_local_file_generator(const char *text, int state);
 
 
 /* Commands of the File Management System supported */
@@ -50,13 +49,12 @@ char **fms_completion(const char *text, int start, int end)
 		if ((p = strchr(cmd, ' ')) != NULL)
 			*p++ = 0;
 
-		if (strcmp(cmd, "download") == 0 || strcmp(cmd, "ls") == 0)
+		if (strcmp(cmd, "upload") == 0)
+			matches = rl_completion_matches(text,
+					rl_filename_completion_function);
+		else
 			matches = rl_completion_matches(text,
 					fms_server_file_generator);
-/*		else
-			matches = rl_completion_matches(text,
-					fms_local_file_generator);
-*/
 	}	
 
 	return matches;
@@ -108,7 +106,8 @@ char *fms_server_file_generator(const char *text, int state)
 		}
 
 
-		list = file_list(path);
+		if ((list = file_list(path)) == NULL)
+			return NULL;
 		save_list = list;
 		len = strlen(file);
 	}
