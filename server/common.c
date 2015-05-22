@@ -285,10 +285,9 @@ static int security_checking(struct client_attr *attr, char *path)
 		return -1;
 
 	/* ls command only support argument is directory, not files */
-	/*if (attr->req.code == REQ_CD || attr->req.code == REQ_LS)	
+	if (attr->req.code == REQ_CD /*|| attr->req.code == REQ_LS*/)	
 		if (stat(path, &sb) != 0 || (sb.st_mode & S_IFMT) != S_IFDIR)
 			return -1;
-	*/
 
 	return 0;
 }

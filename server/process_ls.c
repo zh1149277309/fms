@@ -25,14 +25,18 @@ void process_ls(struct client_attr *attr)
 	char path[PATH_MAX];
 	char buf[BUFSZ];
 	struct dirent *entry, *result;
-	
+	/*struct stat sb;*/
 
 	/* Resolving the  */
 	if (getpath(attr, path) == -1) {
 		SEND_ERR_TO_CLIENT(attr, RESP_LS_ERR, "Bad path");
 		return;
 	}
-
+	/*
+	if (stat(path, &sb) == -1) {
+		SEND_ERR_TO_CLIENT(attr, RESP_LS_ERR, "%s", strerror(errno));
+		return;
+	}*/
 
 	if ((dp = opendir(path)) == NULL) {
 		err_msg(errno, "opendir");

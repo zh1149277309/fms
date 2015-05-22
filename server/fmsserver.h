@@ -43,16 +43,10 @@ struct client_attr {		/* /root/dir + /current/work/directory */
 };
 
 
-struct data {
-	char buf[BUFSZ];
-	struct data *next;	/* In the last message, next will be NULL */
-};
-
-
-
 #define PORT	40325		/* default port number and configure file*/
-#define CONF_FILE 	"/usr/share/fmsserver/server.conf"
-#define PASS_FILE	"passwd"
+#define INSTALL_PATH	"/usr/share/fmsserver/"
+#define CONF_FILE 	INSTALL_PATH"server.conf"
+#define PASS_FILE	INSTALL_PATH"passwd"
 
 
 

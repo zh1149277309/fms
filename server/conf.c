@@ -1,14 +1,14 @@
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
-/* 	#include "conf.h"	*/
+/* #include "conf.h"	*/
 #include "err_handler.h"
 #include "fmsserver.h"
 
 static FILE *fp;
 static int line_cnt;
 
-/* 	Open the configure file, return 0 on success, otherwise, -1 is returned */
+/* Open the configure file, return 0 on success, otherwise, -1 is returned */
 int conf_init(char *conf)
 {
 	char *s;
@@ -21,8 +21,8 @@ int conf_init(char *conf)
 	return 0;
 }
 
-/* 	Store the name and value in the configure file on success, and return 0 on
- * 	success, or -1 was returned when error occurs */
+/* Store the name and value in the configure file on success, and return 0 on
+ * success, or -1 was returned when error occurs */
 int conf_read(char *name, int nlen, char *val, int vlen)
 {
 	char buf[BUFSZ], *p;

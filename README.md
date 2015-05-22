@@ -17,14 +17,14 @@
 			rootdir=/var/fms
 # Installation
 	[Server]	
-				$ make
-				$ cp fmspasswd	 /path/to/fms
-				$ cp fmsserver   /path/to/fms
-				$ cp server.conf /path/to/fms
+			$ make
+			$ sudo make install
+			$ sudo fmspasswd -a root /usr/share/fmsserver/server.conf
 	[Client]
-				$ make
-				$ cp fmsclient   /bin/
-# Feture functionality:
-	1. Add the echo server to interactive command line;
+			$ make
+			$ sudo make install
+# Features
+	1. add auto-completion on command-line, implemented by GNU Readline
+	   library.
 
 
