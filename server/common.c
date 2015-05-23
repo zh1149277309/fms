@@ -4,11 +4,25 @@
 #include <unistd.h>
 #include <errno.h>
 #include "debug.h"
+#include "err_handler.h"
 #include "common.h"
 
 static int security_checking(struct client_attr *attr, char *buf);
 static void escape_space(char *buf);
 
+/* Write n bytes data to the file descriptor which refered by fd. */
+void writen(const int fd, const void *buf, unsigned int len)
+{
+	unsigned int n;
+
+	while (len > 0) {
+		n = write(fd, buf, len);
+		if (n == -1)
+			err_msg(errno, "write");
+		len -= n;
+		buf += n;
+	}
+}
 
 
 /* Simple to resolve path according attr->rootdir and attr->cwd, return 0 on
