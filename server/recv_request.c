@@ -7,7 +7,7 @@
 
 
 
-/* 	Receive request from the client, */
+/* Receive request from the client, */
 inline void recv_request(struct client_attr *attr)
 {
 /*	debug("reciving request header...");	*/
@@ -17,8 +17,8 @@ inline void recv_request(struct client_attr *attr)
 }
 
 
-/* 	Decoding the source string src, and store results to the string points
- * 	by args;
+/* Decoding the source string src, and store results to the string points
+ * by args;
 void decode_args(char *src, char *args)
 {
 	while (1) {

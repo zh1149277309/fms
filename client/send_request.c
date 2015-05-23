@@ -41,9 +41,9 @@ void send_request_data(struct server_attr *attr)
 
 
 
-/* 	Encoding the source string src, and store it to the string pointed by args,
- * 	which separated by ':';
- * 	NOTE:
+/* Encoding the source string src, and store it to the string pointed by args,
+ * which separated by ':';
+ * NOTE:
  *		string "::" for meaning ':' */
 
 /*	NOTE:

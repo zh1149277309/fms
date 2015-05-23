@@ -15,9 +15,9 @@ static void err_handler(int is_exit, const int err, char *fmt, va_list ap);
 
 
 
-/* 	Close the file descriptor of which connceted to client first, and print
- * 	the error message if errno != 0, and addtional mssage, then, call the
- * 	pthread_exit() to exit to current thread */
+/* Close the file descriptor of which connceted to client first, and print
+ * the error message if errno != 0, and addtional mssage, then, call the
+ * pthread_exit() to exit to current thread */
 void _err_thread_exit(int fd, const int err, char *fmt, ...)
 {
 	int ret;
@@ -35,7 +35,7 @@ void _err_thread_exit(int fd, const int err, char *fmt, ...)
 }
 
 
-/* 	Print the formatted message only, doesn't exit */
+/* Print the formatted message only, doesn't exit */
 static void err_handler(int is_exit, const int err, char *fmt, va_list ap)
 {
 	char s[BUFSZ];
@@ -57,7 +57,7 @@ static void err_handler(int is_exit, const int err, char *fmt, va_list ap)
 	}
 }
 
-/* 	Print formatted message and string of errno, and abort ALL the program */
+/* Print formatted message and string of errno, and abort ALL the program */
 void _err_exit(const int err, char *fmt, ...)
 {
 	va_list ap;
@@ -66,7 +66,7 @@ void _err_exit(const int err, char *fmt, ...)
 	err_handler(ERR_HANDLER_EXIT, err, fmt, ap);
 }
 
-/* 	Print a message to console */
+/* Print a message to console */
 void _err_msg(const int err, char *fmt, ...)
 {
 	va_list ap;

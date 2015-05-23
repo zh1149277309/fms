@@ -25,7 +25,7 @@ int process_rm(struct client_attr *attr)
 		return -1;
 	}
 
-	/* 	Option 'f' for force to remove a directory */
+	/* Option 'f' for force to remove a directory */
 	if (strncmp("-f ", attr->data, 3) == 0) {
 #define	RM_DIR_FORCE 0x01
 		flags |= RM_DIR_FORCE;
@@ -47,7 +47,7 @@ int process_rm(struct client_attr *attr)
 		return -1;
 	}
 
-	/* 	Removed path is not directory, remove it directly */
+	/* Removed path is not directory, remove it directly */
 	if ((S_IFMT & sb.st_mode) != S_IFDIR) {
 		if (unlink(path) == -1) {
 			SEND_ERR_TO_CLIENT(attr, RESP_RM_ERR, "%s", strerror(errno));
@@ -72,7 +72,7 @@ int process_rm(struct client_attr *attr)
 }
 
 
-/* 	Force to remove all files and directories under the "path" */
+/* Force to remove all files and directories under the "path" */
 static int remove_recursive(char *path)
 {
 	char tmp[PATH_MAX];
@@ -88,14 +88,14 @@ static int remove_recursive(char *path)
 		if (strcmp(entry.d_name, ".") == 0 || strcmp(entry.d_name, "..") == 0)
 			continue;
 
-		/* 	Using absolute path to rm directories or files */
+		/* Using absolute path to rm directories or files */
 		strcpy(tmp, path);
 		if (*(tmp + strlen(tmp) - 1) != '/')
 			strcat(tmp, "/");
 		strcat(tmp, entry.d_name);
 
 
-		/* 	Remove all things under it directory first */
+		/* Remove all things under it directory first */
 		if (entry.d_type == DT_DIR) {
 
 			remove_recursive(tmp);
@@ -109,7 +109,7 @@ static int remove_recursive(char *path)
 		}
 	}
 
-	/* 	Normally, there is no error, DOES IT WORKS? */
+	/* Normally, there is no error, DOES IT WORKS? */
 	while (closedir(dp) == -1);
 	return 0;
 }

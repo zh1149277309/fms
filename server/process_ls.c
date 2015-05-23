@@ -112,8 +112,8 @@ static int getpath(struct client_attr *attr, char *path)
 /* NOTE:
  *	FOLLING METHODS ARE DEPRECATED.
  *	For make data tranlsate simple, If data size is more larger than BUFSZ
- * 	(1024), It will be separated BUFSZ packages sends to client.
- * 	instead by: send_response(), recv_request()
+ * (1024), It will be separated BUFSZ packages sends to client.
+ * instead by: send_response(), recv_request()
  *//*
 static void write_data_to_client(struct client_attr *attr,
 							struct data *data, unsigned long len)

@@ -83,7 +83,7 @@ int auth(struct client_attr *attr)
 
 
 /*  NOTE:
- * 		You can implement a root privilege user list, if necessary!
+ * You can implement a root privilege user list, if necessary!
  *	Return 0 if user has root privileges, otherwise, return -1.	*/
 int get_root_privilege(struct client_attr *attr)
 {

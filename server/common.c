@@ -58,11 +58,10 @@ int resolve_path(struct client_attr *attr, char *path)
 
 /* Return 0, if path resolving have done, and new path security_checking()
  * is okay, or return -1, if security_checking() failed.
- *
- *	Example:
+ * Example:
  * 	/var/fms/test/a/../../
- *		step1: /var/fms/test/../
- * 		step2: /var/fms/			*/
+ *	step1: /var/fms/test/../
+ *	step2: /var/fms/	*/
 int depth_resolve_path(struct client_attr *attr, char *path)
 {
 	char tmp[PATH_MAX];

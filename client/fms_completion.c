@@ -114,7 +114,7 @@ char *fms_server_file_generator(const char *text, int state)
 
 
 	/* A valid completion will be:
-	 * 	path + 'a valid completion name of a file' */
+	 * path + 'a valid completion name of a file' */
 	strcpy(t, path);
 	while ((p = strchr(list, ':')) != NULL) {
 		*p++ = 0;

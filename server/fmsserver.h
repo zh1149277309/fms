@@ -91,7 +91,7 @@ do {																	\
 #define REQ_DATA_FINISH		0x80
 
 
-/* 	Response Code
+/* Response Code
  *  NOTE:
  *  	Some responses doesn't send addtional data to client. Just for
  *  	comfirm. */

@@ -113,9 +113,9 @@ long getpos(int fd, char *user)
 		}
 		pos = ftell(fp);
 	}
-	/* 	If this statement was executed, the file descriptor of passwd()
-	   	will be close also. */
-	/*	fclose(fp);	*/
+	/* If this statement was executed, the file descriptor of passwd()
+	   will be close also. */
+	/* fclose(fp);	*/
 	return is_find ? pos : -1;
 }
 
@@ -131,35 +131,35 @@ void printb(char *s)
 }
 
 
-/* 	I don't sure, does this reason that non-complete-written are made my
+/* I don't sure, does this reason that non-complete-written are made my
  *  program wrong! */
 void nonblock_fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream)
 {
 	int nwritten;
 
 	while (nmemb > 0) {
-		nwritten = fwrite(ptr, size, nmemb, stream);	/* +1 for newline */
+		nwritten = fwrite(ptr, size, nmemb, stream);/* +1 for newline */
 		nmemb -= nwritten;
 		printf("nwritten: %d\n", nwritten);
 	}
 }
 
-/* 	Set file's position to refered by fd, and save its postion */
+/* Set file's position to refered by fd, and save its postion */
 void savepos(const int fd, long set_pos, long save_pos)
 {
 	save_pos = lseek(fd, 0, SEEK_CUR);	/* Save current position */
-	lseek(fd, set_pos, SEEK_SET);		/* Move to the will be delete line */
+	lseek(fd, set_pos, SEEK_SET);	/* Move to the will be delete line */
 }
 
 
-/* 	Recover the offset to the file */
+/* Recover the offset to the file */
 void recoverpos(const int fd, long save_pos)
 {
 	lseek(fd, save_pos, SEEK_SET);		/* recover to last read */
 }
 
 
-/* 	Use to delete the info of the user, or change it if possible */
+/* Use to delete the info of the user, or change it if possible */
 void _edit(const int fd, int op, char *user)
 {
 	char buf[BUFSZ], buf2[BUFSZ], tbuf[BUFSZ], *p;
@@ -304,7 +304,7 @@ void passwd(char *file, char *user, int op)
 
 
 
-/* 	This program used to encrypt the user's password, and save to file */
+/* This program used to encrypt the user's password, and save to file */
 int main(int argc, char **argv)
 {
 	char c;

@@ -13,9 +13,9 @@
 
 
 /*	NOTE:
- * 		In general, mkdir and rm command is dangerous, so I decide to using
+ * In general, mkdir and rm command is dangerous, so I decide to using
  *	root privilege something like linux, only root user can using those
- * 	command listed above!  */
+ * command listed above!  */
 int process_request(struct client_attr *attr)
 {
 

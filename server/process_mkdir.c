@@ -20,7 +20,7 @@ void process_mkdir(struct client_attr *attr)
 	}
 
 
-	/* 	resolve the "." or ".." on the path */
+	/* resolve the "." or ".." on the path */
 	if (depth_resolve_path(attr, path) == -1) {
 		SEND_ERR_TO_CLIENT(attr, RESP_MKDIR_ERR, "fail to mkdir");
 		return;
@@ -31,7 +31,7 @@ void process_mkdir(struct client_attr *attr)
 		return;
 	}
 
-	/* 	Send null data to client, only confirm server's response */
+	/* Send null data to client, only confirm server's response */
 	*attr->data = 0;
 	SEND_DATA_TO_CLIENT(attr, RESP_MKDIR);
 }

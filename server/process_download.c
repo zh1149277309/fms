@@ -27,7 +27,7 @@ static int transmit(struct client_attr *attr, char *pathname,
 static void download_recursive(struct client_attr *attr, char *path,
 					int dir_name_length);
 
-/* 	Response data format:
+/* Response data format:
  *		first:	send 'length' + 'pathname';
  *		then:	send 'data's...
  *	NOTE:
