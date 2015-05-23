@@ -3,9 +3,26 @@
 #include <string.h>
 #include <errno.h>
 #include "debug.h"
+#include "err_handler.h"
 #include "common.h"
 
 static void escape_space(char *buf);
+
+
+/* Write n bytes data to the file descriptor which refered by fd. */
+void writen(const int fd, const void *buf, unsigned int len)
+{
+	unsigned int n;
+
+	while (len > 0) {
+		n = write(fd, buf, len);
+		if (n == -1)
+			err_msg(errno, "write");
+		len -= n;
+		buf += n;
+	}
+}
+
 
 
 char *get_upload_file(struct server_attr *attr, char *pathname)

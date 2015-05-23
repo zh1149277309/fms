@@ -4,6 +4,7 @@
 #include "fmsclient.h"
 
 char *cstring(unsigned int code);
+void writen(const int fd, const void *buf, unsigned int len);
 char *get_upload_file(struct server_attr *attr, char *pathname);
 int resolve_path(struct server_attr *attr, char *path);
 int depth_resolve_path(struct server_attr *attr, char *path);

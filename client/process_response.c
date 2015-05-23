@@ -135,7 +135,7 @@ download_next:
 
 	while (length > 0) {
 		recv_response(attr);
-		write(fd, attr->data, attr->resp.len);
+		writen(fd, attr->data, attr->resp.len);
 		length -= attr->resp.len;
 	}
 
