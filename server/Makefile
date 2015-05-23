@@ -29,5 +29,6 @@ uninstall:
 	$(RM) /bin/fmspasswd
 
 clean:
-	$(RM) $(OBJ) $(PROGS)
+	$(RM) $(PROGS)
 	$(RM) $(wildcard *.h.gch)
+	$(RM) $(wildcard *.o)

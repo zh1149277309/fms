@@ -1,6 +1,6 @@
 #ifndef _FMSSERVER_H
 #define _FMSSERVER_H
-#ifndef NAME_MAX		
+#ifndef NAME_MAX
 #define NAME_MAX	255
 #endif
 #ifndef PATH_MAX
@@ -15,12 +15,12 @@ struct request {
 	unsigned long len;		/* The length of data */
 };
 
-struct response {			
+struct response {
 	unsigned int code;		/* Requests code */
 	unsigned long len;		/* The length of data */
 };
 
-struct user_info {	
+struct user_info {
 	char user[BUFSZ];		/* Save username */
 	char pwd[BUFSZ];		/* Save encrypted password */
 };
@@ -67,7 +67,7 @@ do {																	\
 #define SEND_DATA_TO_CLIENT(attr, code_type)							\
 	attr->resp.code = code_type;										\
 	attr->resp.len = strlen(attr->data);								\
-	send_response(attr);		
+	send_response(attr);
 
 
 /* This macro should used only to strip the "rootdir" from the "cwd", since
@@ -86,17 +86,17 @@ do {																	\
 #define REQ_MKDIR		0x23
 #define REQ_RM			0x24
 #define	REQ_UPLOAD		0x25
-#define	REQ_DOWNLOAD		0x26	
+#define	REQ_DOWNLOAD		0x26
 #define REQ_EXIT		0x27
 #define REQ_DATA_FINISH		0x80
 
 
 /* 	Response Code
  *  NOTE:
- *  	Some responses doesn't send addtional data to client. Just for 
+ *  	Some responses doesn't send addtional data to client. Just for
  *  	comfirm. */
 #define RESP_AUTH_OK		0x101
-#define RESP_AUTH_ERR		0x102	
+#define RESP_AUTH_ERR		0x102
 #define RESP_LS			0x103
 #define RESP_LS_ERR		0x104
 #define RESP_CD			0x105

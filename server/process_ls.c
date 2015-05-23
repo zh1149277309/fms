@@ -1,5 +1,5 @@
 /* #define _BSD_SOURCE		Depreccated */
-#define _DEFAULT_SOURCE	
+#define _DEFAULT_SOURCE
 #include <unistd.h>
 #include <string.h>
 #include <dirent.h>
@@ -43,15 +43,15 @@ void process_ls(struct client_attr *attr)
 		SEND_ERR_TO_CLIENT(attr, RESP_LS_ERR, "%s", strerror(errno));
 		return;
 	}
-	
+
 	/* I'm not use pathconf(), I think this is ok */
 	if ((entry = malloc(offsetof(struct dirent, d_name) +
 			NAME_MAX + 1)) == NULL) {
 		err_msg(errno, "malloc");
 		goto process_ls_err_closedir;
 	}
-	
-	
+
+
 	*attr->data = 0;
 	attr->resp.code = RESP_LS;
 	attr->resp.len = 0;
@@ -69,14 +69,14 @@ void process_ls(struct client_attr *attr)
 		n = strlen(buf);
 		if (attr->resp.len + n >= BUFSZ) {
 			send_response(attr);
-			strcpy(attr->data, buf);	
+			strcpy(attr->data, buf);
 			attr->resp.len = n;	/* Reset length of data */
 		} else {
 			strcat(attr->data, buf);
 			attr->resp.len += n;
 		}
 	}
-	
+
 	closedir(dp);
 	send_response(attr);
 
@@ -85,9 +85,9 @@ void process_ls(struct client_attr *attr)
 	attr->resp.len = 0;
 	send_response(attr);
 	return;
-	
+
 process_ls_err_closedir:
-	closedir(dp);	
+	closedir(dp);
 	SEND_ERR_TO_CLIENT(attr, RESP_LS_ERR, "List the file or directorys failed");
 }
 
@@ -99,33 +99,33 @@ static int getpath(struct client_attr *attr, char *path)
 {
 	/* It never return fails, since it req.len may be zero */
 	resolve_path(attr, path);
-	
-	/* Multiple .. are specified */	
+
+	/* Multiple .. are specified */
 	if (depth_resolve_path(attr, path) == -1)
-		return -1;	
-		
-	debug("resolving path: (%s)", path);	
+		return -1;
+
+	debug("resolving path: (%s)", path);
 	return 0;
 }
 
 
-/* NOTE: 
- *	FOLLING METHODS ARE DEPRECATED. 
+/* NOTE:
+ *	FOLLING METHODS ARE DEPRECATED.
  *	For make data tranlsate simple, If data size is more larger than BUFSZ
  * 	(1024), It will be separated BUFSZ packages sends to client.
- * 	instead by: send_response(), recv_request() 
+ * 	instead by: send_response(), recv_request()
  *//*
-static void write_data_to_client(struct client_attr *attr, 
+static void write_data_to_client(struct client_attr *attr,
 							struct data *data, unsigned long len)
 {
 	char *buf;
 	struct data *curr;
 
 	write_to_client(attr->fd, &attr->resp, sizeof(attr->resp));
-	
+
 
 	curr = data;
-	buf = curr->buf;	
+	buf = curr->buf;
 	while (len > 0) {
 		if (len > BUFSZ) {
 			write_to_client(attr->fd, buf, BUFSZ);
@@ -135,7 +135,7 @@ static void write_data_to_client(struct client_attr *attr,
 		} else {
 			write_to_client(attr->fd, buf, len);
 			break;
-		} 
+		}
 	}
 }
 
@@ -143,7 +143,7 @@ static void write_data_to_client(struct client_attr *attr,
 static void write_to_client(const int fd, void *buf, unsigned long len)
 {
 	int n;
-	
+
 	while ((n = write(fd, buf, (size_t)len)) < len) {
 		if (n == -1)
 			err_thread_exit(fd, errno, "write");
@@ -155,7 +155,7 @@ static void write_to_client(const int fd, void *buf, unsigned long len)
 static void read_from_client(const int fd, char *buf, int len)
 {
 	int n;
-	
+
 	while ((n = read(fd, buf, len)) < len) {
 		if (n == -1)
 			err_thread_exit(fd, errno, "read");
@@ -170,20 +170,20 @@ static int datacat(struct client_attr *attr, char *buf)
 {
 	struct data *tp;
 	int nwritn, srclen, buflen;
-	
+
 	if (NULL == attr->data) {
 		if ((attr->data = malloc(sizeof(struct data))) == NULL)
 			return -1;
 		attr->curr = attr->data;
-		curr->next = NULL;	
+		curr->next = NULL;
 	}
-	
+
 	nwritn = 0;
 	buflen = strlen(attr->curr->buf);
 	srclen = strlen(buf);
 	if (buflen + srclen > BUFSZ) {
 		strncat(attr->curr->buf, buf, BUFSZ - buflen);
-		
+
 		nwritn += BUFSZ - buflen;
 		if ((tp = malloc(sizeof(struct data))) == NULL) {
 			return -1;
@@ -192,13 +192,13 @@ static int datacat(struct client_attr *attr, char *buf)
 		attr->curr->next = tp;
 		attr->curr = tp;
 		buflen = 0;
-		
+
 		strncpy(attr->curr->buf, buf + nwritn, srclen - nwritn);
 	} else {
-		strcat(attr->curr->buf, buf);	
+		strcat(attr->curr->buf, buf);
 		nwritn += srclen;
 	}
-	
+
 	attr->resp.len += nwritn;
 	return nwritn;
 }*/

@@ -55,7 +55,7 @@ char **fms_completion(const char *text, int start, int end)
 		else
 			matches = rl_completion_matches(text,
 					fms_server_file_generator);
-	}	
+	}
 
 	return matches;
 }
@@ -78,7 +78,7 @@ char *fms_command_generator(const char *text, int state)
 		if (strncmp(name, text, len) == 0)
 			return dupstr(name);
 	}
-	
+
 	return NULL;
 }
 
@@ -91,7 +91,7 @@ char *fms_server_file_generator(const char *text, int state)
 	static char path[BUFSZ], file[BUFSZ];
 	char *p, t[BUFSZ];
 	int len;
-	
+
 	rl_filename_completion_desired = 1;
 	if (!state) {
 		/* Request the files of under the 'path' on the server, and

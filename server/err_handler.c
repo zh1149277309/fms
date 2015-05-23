@@ -23,13 +23,13 @@ void _err_thread_exit(int fd, const int err, char *fmt, ...)
 	int ret;
 	va_list ap;
 
-	va_start(ap, fmt);	
+	va_start(ap, fmt);
 	err_handler(ERR_HANDLER_NOEXIT, err, fmt, ap);
 	va_end(ap);
 
 	if (fd >= 0) 			/* ensure fd is correct */
 		close(fd);
-		
+
 	ret = 1;
 	pthread_exit(&ret);		/* Return 1 */
 }
@@ -41,7 +41,7 @@ static void err_handler(int is_exit, const int err, char *fmt, va_list ap)
 	char s[BUFSZ];
 
 	*s = 0;
-	
+
 	strcat(s, fmt);
 	if (err) {
 		strcat(s, " [");
@@ -50,18 +50,18 @@ static void err_handler(int is_exit, const int err, char *fmt, va_list ap)
 	}
 	strcat(s, "\n");
 	vfprintf(stderr, s, ap);
-	
+
 	if (is_exit)
 		exit(EXIT_FAILURE);
 }
 
 /* Print formatted message and string of errno, and abort ALL the program */
-void _err_exit(const int err, char *fmt, ...) 
+void _err_exit(const int err, char *fmt, ...)
 {
 	va_list ap;
-	
-	va_start(ap, fmt);	
-	err_handler(ERR_HANDLER_EXIT, err, fmt, ap);		
+
+	va_start(ap, fmt);
+	err_handler(ERR_HANDLER_EXIT, err, fmt, ap);
 }
 
 /* Print a message to console */

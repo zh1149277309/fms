@@ -9,7 +9,7 @@
 
 #define PORT	"40325"		/* Default port number and configure file*/
 #define BUFSZ	1024
-#ifndef INET_ADDRSTRLEN	
+#ifndef INET_ADDRSTRLEN
 #define INET_ADDRSTRLLEN	16	/* xxx.xxx.xxx.xxx + '\0' */
 #endif
 #define PORT_LEN	6		/* xxxxx + '\0' */
@@ -22,7 +22,7 @@
 #define REQ_MKDIR		0x23
 #define REQ_RM			0x24
 #define	REQ_UPLOAD		0x25
-#define	REQ_DOWNLOAD		0x26	
+#define	REQ_DOWNLOAD		0x26
 #define REQ_EXIT		0x27
 #define REQ_DATA_FINISH		0x80
 
@@ -31,7 +31,7 @@
 /* Response Code, Some responses doesn't send addtional data to client. Just
  * for comfirm. */
 #define RESP_AUTH_OK		0x101
-#define RESP_AUTH_ERR		0x102	
+#define RESP_AUTH_ERR		0x102
 #define RESP_LS			0x103
 #define RESP_LS_ERR		0x104
 #define RESP_CD			0x105
@@ -55,7 +55,7 @@ struct request {			/* All requests types of client */
 	unsigned long len;		/* The length of data */
 };
 
-struct response {			
+struct response {
 	unsigned int code;		/* Requests code */
 	unsigned long len;		/* The length of data */
 };

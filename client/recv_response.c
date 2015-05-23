@@ -20,7 +20,7 @@ void recv_response_header(struct server_attr *attr)
 	void *p;
 	int n;
 	unsigned long byte;
-	
+
 	p = &attr->resp;
 	byte = sizeof(attr->resp);
 	while ((n = read(attr->fd, p, byte)) < byte) {
@@ -28,14 +28,14 @@ void recv_response_header(struct server_attr *attr)
 			err_exit(errno, "read");
 		else if (n == 0)	/* No data arrive */
 			continue;		/* NEED IMPLEMENT TO SLEEP */
-			
+
 		p += n;
 		byte -= byte;
-	} 
-	
+	}
+
 #ifdef __DEBUG__
 	char *_point_to_cstring;		/* Reduce name conflicts */
-	
+
 	_point_to_cstring = cstring(attr->resp.code);
 	debug("receive header: %s (%#X), length=%ld)", _point_to_cstring,
 			attr->resp.code, attr->resp.len);

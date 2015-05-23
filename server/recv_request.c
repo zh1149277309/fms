@@ -17,8 +17,8 @@ inline void recv_request(struct client_attr *attr)
 }
 
 
-/* 	Decoding the source string src, and store results to the string points 
- * 	by args; 
+/* 	Decoding the source string src, and store results to the string points
+ * 	by args;
 void decode_args(char *src, char *args)
 {
 	while (1) {
@@ -31,11 +31,11 @@ void decode_args(char *src, char *args)
 		} else {
 			*args++ = *src;
 		}
-		
+
 		src++;
 	}
 	args = 0;
-} */	
+} */
 
 
 void recv_request_header(struct client_attr *attr)
@@ -43,7 +43,7 @@ void recv_request_header(struct client_attr *attr)
 	void *p;
 	int n;
 	unsigned long byte;
-	
+
 	p = &attr->req;
 	byte = sizeof(attr->req);
 	while ((n = read(attr->fd, p, byte)) < byte) {
@@ -56,10 +56,10 @@ void recv_request_header(struct client_attr *attr)
 		byte -= byte;
 
 	}
-	
+
 #ifdef __DEBUG__
 	char *_point_to_cstring;		/* Reduce name conflicts */
-	
+
 	_point_to_cstring = cstring(attr->req.code);
 	debug("receive header: %s (%#X), length=%ld)", _point_to_cstring,
 			attr->req.code, attr->req.len);
@@ -80,12 +80,12 @@ void recv_request_data(struct client_attr *attr)
 			err_thread_exit(attr->fd, errno, "read");
 		else if (n == 0)
 			continue;
-		
+
 		p += n;
 		len -= n;
 	}
 	*(attr->data + attr->req.len) = 0;
-	
+
 /*	debug("receive data: (%s)", attr->data);	*/
 }
 

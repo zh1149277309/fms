@@ -46,25 +46,25 @@ static void *session(void *_fd)
 {
 	int fd = *((int *)_fd);
 	struct client_attr attr;	/* Thread-level attributes */
-	
+
 	debug("new session: %d", fd);
-	
+
 	/* Initialize the structure client_attr */
 	attr.fd = fd;
 	attr.rootdir = conf.rootdir;
 	attr.passfile = conf.passfile;
 	strcpy(attr.cwd, conf.rootdir);
 	strcat(attr.cwd, "/");
-	
+
 	/*pthread_cleanup_push(cleanup_thread, _fd);
-	pthread_cleanup_pop(0);	*/	
-	
+	pthread_cleanup_pop(0);	*/
+
 	if (auth(&attr) == -1)		/* User authentication failed */
 		err_thread_exit(fd, 0, "authentication was failed");
 
-	/* NOTE: 
-	 * if encounter the end of stream, it will return 0, exit by 
-	 * reciving the REQ_EXIT request from clients */			
+	/* NOTE:
+	 * if encounter the end of stream, it will return 0, exit by
+	 * reciving the REQ_EXIT request from clients */
 	while (1) {
 		recv_request(&attr);	/* include header and data */
 		if (process_request(&attr) == REQ_EXIT)
@@ -103,41 +103,41 @@ static void conn_listen(unsigned short port)
 	int sockfd, *fd;
 	socklen_t clilen;
 	struct sockaddr_in serv_in, cli_in;
-	
+
 	if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
 		err_exit(errno, "socket");
-	
+
 	/* Use SO_REUSEADDR to reuse local addresses, if it's not active */
 	flags = 1;
-	if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, (void *)&flags, 
+	if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, (void *)&flags,
 			sizeof(flags)) == -1)
 		err_exit(errno, "setsockopt");
-	
-	bzero(&serv_in, sizeof(serv_in));	
+
+	bzero(&serv_in, sizeof(serv_in));
 	serv_in.sin_family = AF_INET;
 	serv_in.sin_port = htons(port);
 	serv_in.sin_addr.s_addr = INADDR_ANY;
-		
-	if (bind(sockfd, (struct sockaddr *)&serv_in, 
+
+	if (bind(sockfd, (struct sockaddr *)&serv_in,
 			(socklen_t)sizeof(struct sockaddr_in)) == -1)
 		err_exit(errno, "bind");
-		
+
 	if (listen(sockfd, 100) == -1)
 		err_exit(errno, "listen");
-	
-	/* Start to listen the port, and accept the request */	
+
+	/* Start to listen the port, and accept the request */
 	clilen = sizeof(cli_in);
-	while (1) {		
+	while (1) {
 		while ((fd = malloc(sizeof(int))) == NULL);
-		
+
 		*fd = accept(sockfd, (struct sockaddr *)&cli_in, &clilen);
 		if (*fd == -1)
 			err_msg(errno, "accept");
-	
+
 	/* Create a new thread to process this connection --- Iterations */
 		new_thread(fd);
 	}
-	
+
 	/* This will never be executed, odd! */
 	close(sockfd);
 }
@@ -149,12 +149,12 @@ static void server_init(char *file)
 {
 	char name[BUFSZ], val[BUFSZ];
 	char *p;
-	
-	bzero(&conf, sizeof(conf));	
-	
+
+	bzero(&conf, sizeof(conf));
+
 	if (conf_init(file) == -1)
 		err_exit(0, "conf_init failed");
-		
+
 	while (conf_read(name, BUFSZ, val, BUFSZ) == 0) {
 		if (strcmp("port", name) == 0)
 			conf.port = (unsigned short)atoi(val);
@@ -165,18 +165,18 @@ static void server_init(char *file)
 		else
 			err_exit(0, "invalid configure: %s=%s\n", name, val);
 	}
-	
+
 	p = get_current_dir_name();
 	if (conf.port == 0)
 		conf.port = PORT;	/* Default PORT number 40325 */
 	if (*conf.rootdir == 0)
 		strcpy(conf.rootdir, p);
 	free(p);
-	
+
 	p = (conf.rootdir + strlen(conf.rootdir) - 1);
-	if (*p == '/')			/* Ensure no '/' end with rootdir */	
-		*p = 0;		
-	
+	if (*p == '/')			/* Ensure no '/' end with rootdir */
+		*p = 0;
+
 
 	conf_close();
 }
@@ -186,7 +186,7 @@ int main(int argc, char **argv)
 {
 	char *file;
 	int opt;
-	
+
 	file = NULL;
 	while ((opt = getopt(argc, argv, "f:h")) != -1) {
 		switch (opt) {

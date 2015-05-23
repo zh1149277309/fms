@@ -13,7 +13,7 @@ char *get_upload_file(struct server_attr *attr, char *pathname)
 	if ((resolve_path(attr, pathname) == -1) ||
 			(depth_resolve_path(attr, pathname) == -1))
 		return NULL;
-	
+
 	debug("Upload file: %s", pathname);
 	return pathname;
 }
@@ -29,11 +29,11 @@ int resolve_path(struct server_attr *attr, char *path)
 
 	if (*attr->data == '/') {			/* ls /absolute/path */
 		strcpy(path, attr->data);
-	} else {		
+	} else {
 		strcpy(path, cwd);
 
 		if (*(path + strlen(path) - 1) != '/')
-			strcat(path, "/");	
+			strcat(path, "/");
 		strcat(path, attr->data);
 
 		i = strlen(path) - 1;
@@ -42,8 +42,8 @@ int resolve_path(struct server_attr *attr, char *path)
 	}
 
 	free(cwd);
-	return 0;	
-}	
+	return 0;
+}
 
 
 int depth_resolve_path(struct server_attr *attr, char *path)
@@ -55,10 +55,10 @@ int depth_resolve_path(struct server_attr *attr, char *path)
 	strcpy(tmp, path);
 	while ((p = strstr(path, "..")) != NULL) {
 		*(p - 1) = 0;
-		if ((p2 = strrchr(path, '/')) != NULL) 
+		if ((p2 = strrchr(path, '/')) != NULL)
 			*p2 = 0;
 		else
-			break;		
+			break;
 
 		strcpy(tmp, path);
 		strcat(tmp, p + 2);
@@ -101,7 +101,7 @@ char *cstring(unsigned int code)
 		while ((s = malloc(BUFSZ)) == NULL);		\
 		sprintf(s, str, ##__VA_ARGS__);			\
 		return s;					\
-	} while (0)							
+	} while (0)
 
 	switch (code) {
 	case REQ_AUTH:
@@ -173,6 +173,6 @@ static void escape_space(char *buf)
 		*p++ = 0;
 		/* p point to space ' ' which after backslash '\' */
 		strcat(buf, p);
-		p2 = buf;	
+		p2 = buf;
 	}
 }

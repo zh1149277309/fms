@@ -18,36 +18,36 @@ void process_upload(struct client_attr *attr)
 	char pathname[PATH_MAX + NAME_MAX + 1];
 
 
-download_next:	
+download_next:
 	/* Format: | size_t file-length | size_t file-name-length | file-name */
-	length = *((int *)attr->data);		
+	length = *((int *)attr->data);
 	n = *((int *)(attr->data + sizeof(size_t)));
-	
+
 	bzero(pathname, PATH_MAX + NAME_MAX + 1);
 	strcpy(pathname, attr->cwd);
 	if (*(pathname + strlen(pathname) - 1) != '/')
 		strcat(pathname, "/");
-		
+
 	strncat(pathname, (attr->data + sizeof(size_t) * 2), n);
 
-	
+
 	create_upload_dir(attr, pathname);/* create directory if necessary */
 	debug("file: %s, length: %ld", pathname, length);
-		
+
 	/* Overwrite exist file */
-	if ((fd = open(pathname, O_WRONLY | O_CREAT, 
+	if ((fd = open(pathname, O_WRONLY | O_CREAT,
 				DEFAULT_UPLOAD_FILE_MODE)) == -1) {
 		err_msg(errno, "Error for open %s", pathname);
 		return;
 	}
-	
+
 
 	while (length > 0) {
 		recv_request(attr);
 		write(fd, attr->data, attr->req.len);
-		length -= attr->req.len;	
+		length -= attr->req.len;
 	}
-	
+
 	close(fd);
 
 	recv_request(attr);
@@ -64,12 +64,12 @@ static void create_upload_dir(struct client_attr *attr, char *dirname)
 	char tmp[PATH_MAX], dir[PATH_MAX + NAME_MAX + 1];
 	struct stat sb;
 
-	
+
 	*tmp = 0;
 	strcpy(dir, dirname);
 	while ((p = strchr(dir, '/')) != NULL) {
 		*p++ = 0;
-		
+
 		strcat(tmp, dir);
 		strcat(tmp, "/");
 		/*  Relative path name, create the directory if it does not exist */
@@ -77,7 +77,7 @@ static void create_upload_dir(struct client_attr *attr, char *dirname)
 			while (mkdir(tmp, DEFAULT_UPLOAD_FILE_MODE) == -1);
 		}
 
-		strcpy(dir, p);	
-	}	
+		strcpy(dir, p);
+	}
 }
 

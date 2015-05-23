@@ -15,7 +15,7 @@ static void strip_ws(char *cmd);
  * Example:
  *	[test@127.0.0.1 /]$ ls /foo\ bar/test.c
  * Step1:
- *	strip repeating space characters whichs are ' ', '\t', '\n'... 
+ *	strip repeating space characters whichs are ' ', '\t', '\n'...
  * Step2:
  *	the first encountered space as separate CMD and ARGS.
  * Step3:
@@ -24,24 +24,24 @@ static void strip_ws(char *cmd);
 int set_request(char *cmd, struct server_attr *attr)
 {
 	char *p;
-	
+
 	strip_ws(cmd);				/* Step1 */
 
 	*attr->data = 0;
-	attr->req.len = 0;	
+	attr->req.len = 0;
 	if ((p = strchr(cmd, ' ')) != NULL) {	/* Step2 */
-		*p++ = 0;		
-	
+		*p++ = 0;
+
 		strcpy(attr->data, p);		/* May include "\ " */
 		attr->req.len = strlen(attr->data);
 		strcpy(attr->buf, p);		/* save current request data */
 	}
-	
+
 
 	attr->req.code = getrequestype(cmd);	/* Get request code */
 	if (attr->req.code == -1)
 		return -1;
-	
+
 	debug("cmd=(%s)", cmd);
 	debug("args (%s)", attr->data);
 	debug("sending request to %s", attr->ip);
@@ -77,17 +77,17 @@ static void strip_ws(char *cmd)
 {
 	char buf[BUFSZ], *p, *p2;
 	int _is_first_run, _is_space, _is_space_first;
-	
-	/* NOTE: 
+
+	/* NOTE:
 	 *	Can not to increament or decrement the address of array;
 	 *	buf++; 	or buf += 1; 	both are error on compiling  */
-	
+
 	p = buf;
 	p2 = cmd;
 	_is_first_run = 1;
 	_is_space_first = 1;
 	while (1) {
-		
+
 		if (*p2 == '\0') {
 			break;
 		} else if ((_is_space = isspace(*p2)) && _is_first_run) {
@@ -96,19 +96,19 @@ static void strip_ws(char *cmd)
 		} else if (_is_space && _is_space_first) {
 			*p++ = ' ';	/* All whitespace instead by ' ' */
 			_is_space_first = 0;
-		} else if (!_is_space) { 
+		} else if (!_is_space) {
 			*p++ = *p2;
 			_is_first_run = 0;
 			_is_space_first = 1;
 		}
-		
+
 		p2++;
 	}
 	if (*(p - 1) == ' ')
 		*(p - 1) = 0;
 	else
 		*p = 0;
-	
+
 	strcpy(cmd, buf);
 }
 

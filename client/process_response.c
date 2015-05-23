@@ -11,7 +11,7 @@
 #include "send_request.h"
 #include "fmsclient.h"
 
-#define UPLOAD_INCLUDE_DIR_NAME	0x01	
+#define UPLOAD_INCLUDE_DIR_NAME	0x01
 #define UPLOAD_FINISH(attr)			\
 	attr->req.code = REQ_DATA_FINISH;	\
 	attr->req.len = 0;			\
@@ -25,14 +25,14 @@ static void process_download(struct server_attr *attr);
 static void create_download_dir(char *dir);
 static char *brevity_name(char *pathname, int dir_name_length, int flags);
 static int set_dir_name_length(char *pathname, int *dir_name_length);
-static int transmit(struct server_attr *attr, char *pathname, 
+static int transmit(struct server_attr *attr, char *pathname,
 		int dir_name_length, int flags);
-static void upload_recursive(struct server_attr *attr, char *path, 
+static void upload_recursive(struct server_attr *attr, char *path,
 		int dir_name_length);
 static void process_upload(struct server_attr *attr);
 
-		
-		
+
+
 int process_response(struct server_attr *attr)
 {
 	switch (attr->resp.code) {
@@ -67,7 +67,7 @@ int process_response(struct server_attr *attr)
 		return RESP_EXIT;	/* Receive exit confirm */
 		break;
 	default:
-		err_exit(0, "UNKNOWN RESPONSE: (%#X)", attr->resp.code);	
+		err_exit(0, "UNKNOWN RESPONSE: (%#X)", attr->resp.code);
 	}
 	return 0;
 }
@@ -114,30 +114,30 @@ static void process_download(struct server_attr *attr)
 	char filename[NAME_MAX + 1];
 
 
-download_next:	
+download_next:
 	/* Format: | size_t file-length | size_t file-name-length | file-name */
-	length = *((int *)attr->data);		
-	
+	length = *((int *)attr->data);
+
 	n = *((int *)(attr->data + sizeof(size_t)));
 	strncpy(filename, (attr->data + sizeof(size_t) * 2), n);
 	*(filename + n) = 0;
-	
+
 	create_download_dir(filename);	/* create directory if necessary */
 	debug("file: %s, length: %ld", filename, length);
-		
+
 	/* Overwrite exist file */
 	fd = open(filename, O_WRONLY | O_CREAT, DEFAULT_DL_FILE_MODE);
 	if (fd == -1) {
 		err_msg(errno, "Error for open %s", filename);
 		return;
 	}
-	
+
 	while (length > 0) {
 		recv_response(attr);
 		write(fd, attr->data, attr->resp.len);
-		length -= attr->resp.len;	
+		length -= attr->resp.len;
 	}
-	
+
 	close(fd);
 
 	/* Confirm does recived the RESP_DATA_FINISH flag */
@@ -156,14 +156,14 @@ static void create_download_dir(char *dirname)
 	struct stat sb;
 
 
-	
+
 	*tmp = 0;
 	strcat(tmp, DEFAULT_DL_DIR);
 	strcpy(dir, dirname);
 
 	while ((p = strchr(dir, '/')) != NULL) {
 		*p++ = 0;
-		
+
 		strcat(tmp, dir);
 		strcat(tmp, "/");
 		/*  Relative path name, create the directory if it does not
@@ -172,8 +172,8 @@ static void create_download_dir(char *dirname)
 			while (mkdir(tmp, DEFAULT_DL_DIR_MODE) == -1);
 		}
 
-		strcpy(dir, p);	
-	}	
+		strcpy(dir, p);
+	}
 }
 
 
@@ -181,19 +181,19 @@ static void create_download_dir(char *dirname)
 /* Send files to server */
 static void process_upload(struct server_attr *attr)
 {
-	int dir_name_length;								
-	char pathname[PATH_MAX + NAME_MAX]; 
+	int dir_name_length;
+	char pathname[PATH_MAX + NAME_MAX];
 	struct stat sb;
 
-			
+
 	/* strcpy(pathname, attr->data);	*/
 	if (get_upload_file(attr, pathname) == NULL)
 		return;
 	if (stat(pathname, &sb) == -1) {
 		err_msg(errno, "stat");
 		return;
-	} 
-	
+	}
+
 
 	if ((S_IFMT & sb.st_mode) == S_IFREG) {
 		transmit(attr, pathname, 0, 0);
@@ -203,44 +203,44 @@ static void process_upload(struct server_attr *attr)
 		/* Set where is the index of last directory name start */
 		if (set_dir_name_length(pathname, &dir_name_length) == -1)
 			return;
-		
+
 		upload_recursive(attr, pathname, dir_name_length);
-		
+
 		/* When all files was download success, send
 		 * RESP_DOWNLOAD_FINISH */
 		UPLOAD_FINISH(attr);
 		return;
-	} 
-	
-	return;		
+	}
+
+	return;
 }
 
 
 
 
-static void upload_recursive(struct server_attr *attr, char *path, 
+static void upload_recursive(struct server_attr *attr, char *path,
 		int dir_name_length)
 {
 	DIR *dirp;
 	struct dirent entry, *result;
 	char tmp[PATH_MAX];
-	
+
 	debug("opendir: %s", path);
 	if ((dirp = opendir(path)) == NULL) {
 		return;
 	}
-	
-	
+
+
 	while ((readdir_r(dirp, &entry, &result) == 0) && result) {
 		if (strcmp(".", entry.d_name) == 0 ||
 				strcmp("..", entry.d_name) == 0)
 			continue;
-		
+
 		strcpy(tmp, path);
 		if (*(tmp + strlen(tmp) - 1) != '/')
 			strcat(tmp, "/");
-		strcat(tmp, entry.d_name);	
-		
+		strcat(tmp, entry.d_name);
+
 		if (entry.d_type == DT_REG) {
 		/* Is a regular file, Just transmit it to client */
 			transmit(attr, tmp, dir_name_length,
@@ -250,21 +250,21 @@ static void upload_recursive(struct server_attr *attr, char *path,
 			upload_recursive(attr, tmp, dir_name_length);
 		}
 	}
-		
+
 	closedir(dirp);
 }
 
 
 
 /* Download the file which pointed by "pathname" */
-static int transmit(struct server_attr *attr, char *pathname, 
+static int transmit(struct server_attr *attr, char *pathname,
 		int dir_name_length, int flags)
 {
 	int fd;
-	size_t length, n;	
+	size_t length, n;
 	char *p;
-	
-	
+
+
 	if ((fd = open(pathname, O_RDONLY)) == -1) {
 		err_msg(errno, "open");
 		return -1;
@@ -289,20 +289,20 @@ static int transmit(struct server_attr *attr, char *pathname,
 	/* file name length */
 	memcpy(attr->data + attr->req.len, &n, sizeof(size_t));
 	attr->req.len += sizeof(size_t);
-	
+
 	memcpy(attr->data + attr->req.len, p, n);	/* file name */
 	attr->req.len += n;
 	send_request(attr);
-	
+
 	/* Send data to server*/
 	lseek(fd, 0, SEEK_SET);
 	while ((attr->req.len = read(fd, attr->data, BUFSZ - 1)) > 0) {
 		send_request(attr);
 	}
-	
+
 	if (attr->resp.len == -1) {
 		err_msg(errno, "Upload occur error");
-		return -1;	
+		return -1;
 	}
 
 	close(fd);
@@ -315,15 +315,15 @@ static int set_dir_name_length(char *pathname, int *dir_name_length)
 {
 	size_t s;
 	char *p;
-	
-	
+
+
 	s = strlen(pathname);
 	if (*(pathname + s - 1) == '/')
 		*(pathname + s - 1) = 0;
-		
+
 	if ((p = strrchr(pathname, '/')) == NULL)
 		return -1;
-	
+
 	*p = 0;
 	*dir_name_length = strlen(pathname) + 1;	/* +1 for'/' */
 	*p = '/';

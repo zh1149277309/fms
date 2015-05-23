@@ -21,7 +21,7 @@ static int is_auth_ok(char *file, char *u, char *p);
 
 
 
-/* Return 0, if authentication success, or -1 on error; if occurs fatal error, 
+/* Return 0, if authentication success, or -1 on error; if occurs fatal error,
  * current thread will be exit */
 int auth(struct client_attr *attr)
 {
@@ -30,39 +30,39 @@ int auth(struct client_attr *attr)
 /*	struct request req;
 	struct response resp;	*/
 
-	
+
 /*	@improve on current code section
-	
+
 	if ((s = read(attr->fd, &req, sizeof(req))) != sizeof(req))
-		err_thread_exit(attr->fd, s, "read");	
-	
+		err_thread_exit(attr->fd, s, "read");
+
 	debug("code=%d, len=%ld", req.code, req.len);
-	
+
 	if (req.code != REQ_AUTH)
 		err_thread_exit(attr->fd, 0, "not a authentication command");
-		
+
 	if ((buf = malloc(req.len + 1)) == NULL)
 		err_thread_exit(attr->fd, errno, "malloc buffer failed");
-	
-	
+
+
 	readn(attr->fd, buf, req.len);	*/
 
  	recv_request(attr);
  	if (attr->req.code != REQ_AUTH) {
- 		SEND_ERR_TO_CLIENT(attr, RESP_AUTH_ERR, 
+ 		SEND_ERR_TO_CLIENT(attr, RESP_AUTH_ERR,
 				"Please authenticate user first");
  		err_thread_exit(attr->fd, 0, "Not a authentication request");
  	}
- 	
- 	
+
+
 	if ((p = strchr(attr->data, ':')) == NULL) /* username:encrypted-passwd */
 		err_thread_exit(attr->fd, 0, "Unrecogonized format of authentication");
 	else
-		*p++ = 0;	
-	
+		*p++ = 0;
+
 	strcpy(attr->usrinfo.user, attr->data);
 	strcpy(attr->usrinfo.pwd, p);
-	
+
 	debug("user=(%s), pwd=(%s)", attr->usrinfo.user, attr->usrinfo.pwd);
 	auth_ok = is_auth_ok(attr->passfile, attr->usrinfo.user,
 		attr->usrinfo.pwd);
@@ -76,8 +76,8 @@ int auth(struct client_attr *attr)
 
 	attr->resp.len = 0;
  	send_response(attr);
-	
-	return auth_ok ? 0 : -1;	
+
+	return auth_ok ? 0 : -1;
 }
 
 
@@ -89,7 +89,7 @@ int get_root_privilege(struct client_attr *attr)
 {
 	if (strcmp("root", attr->usrinfo.user) == 0)
 		return 0;
-		
+
 	return -1;
 }
 
@@ -103,13 +103,13 @@ static int is_auth_ok(char *file, char *u, char *p)
 	int auth_ok;
 	char user[BUFSZ], pwd[BUFSZ];
 	FILE *fp;									/* used in pass_init() */
-	
+
 	auth_ok = 0;
 	if (-1 == pass_init(file, &fp)) {
 		err_msg(0, "pass_init");
-		return 0;	
+		return 0;
 	}
-	
+
 	while (pass_read(user, pwd, fp) != -1) {
 	/*	debug("strcmp: user(%s, %s) pwd(%s, %s)", user, u, pwd, p);	*/
 		if (strcmp(user, u) == 0 && strcmp(pwd, p) == 0) {
@@ -117,7 +117,7 @@ static int is_auth_ok(char *file, char *u, char *p)
 			break;
 		}
 	}
-	
+
 	pass_close(fp);
 	return auth_ok;
 }
@@ -127,11 +127,11 @@ static int is_auth_ok(char *file, char *u, char *p)
 static int pass_init(char *file, FILE **fp)
 {
 /*	debug("password file=%s", file);	*/
-	if ((*fp = fopen(file, "r")) == NULL) { 
+	if ((*fp = fopen(file, "r")) == NULL) {
 		err_msg(errno, "fopen");
 		return -1;
 	}
-	
+
 	return 0;
 }
 
@@ -145,14 +145,14 @@ static int pass_read(char *user, char *pwd, FILE *fp)
 		return -1;
 	if ((p = strchr(buf, ':')) == NULL)
 		return -1;
-	
+
 	*p++ = 0;
 	strcpy(user, buf);
 	strcpy(pwd, p);
-	
+
 	if ((p = strchr(pwd, '\n')) != NULL)	/* Strip at the end of newline */
-		*p = 0;				
-	return 0;	
+		*p = 0;
+	return 0;
 }
 
 static void pass_close(FILE *fp)
@@ -163,18 +163,18 @@ static void pass_close(FILE *fp)
 
 
 
-/* NOTE: 
+/* NOTE:
  *     deprecated, instead by recv_request()
- * Read n bytes data, much simple 
+ * Read n bytes data, much simple
 static void readn(int fd, char *buf, unsigned long len)
 {
 	int n;
 	while (len > 0) {
-		n = read(fd, buf, len);	
+		n = read(fd, buf, len);
 		buf += n;
 		len -= n;
 	}
-	
+
 	*(buf + len) = 0;
 }	*/
 

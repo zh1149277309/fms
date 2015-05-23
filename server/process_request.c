@@ -14,11 +14,11 @@
 
 /*	NOTE:
  * 		In general, mkdir and rm command is dangerous, so I decide to using
- *	root privilege something like linux, only root user can using those 
+ *	root privilege something like linux, only root user can using those
  * 	command listed above!  */
 int process_request(struct client_attr *attr)
 {
-	
+
 	switch (attr->req.code) {
 	case REQ_LS:
 		process_ls(attr);
@@ -37,7 +37,7 @@ int process_request(struct client_attr *attr)
 		break;
 	case REQ_UPLOAD:
 		/* (principle of upload)
-		 *	step1:	client(REQ_UPLOAD) --> server(RESP_UPLOAD) 
+		 *	step1:	client(REQ_UPLOAD) --> server(RESP_UPLOAD)
 		 *	step2:	client(files) --> server(files))
 		 *	step3:	client(REQ_DATA_FINISH --> server()) */
 
@@ -51,7 +51,7 @@ int process_request(struct client_attr *attr)
 	case REQ_DOWNLOAD:
 		process_download(attr);
 		break;
-	case REQ_EXIT:		
+	case REQ_EXIT:
 		attr->resp.code = RESP_EXIT;	/* Send the exit response */
 		attr->resp.len = 0;
 		send_response(attr);
@@ -61,6 +61,6 @@ int process_request(struct client_attr *attr)
 		err_thread_exit(attr->fd, 0, "unrecognized command: %#X",
 				attr->req.code);
 	}
-	
+
 	return 0;	/* Suppress warning, it never reach here */
 }

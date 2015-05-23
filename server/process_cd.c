@@ -29,8 +29,8 @@ void process_cd(struct client_attr *attr)
 		SEND_ERR_TO_CLIENT(attr, RESP_CD_ERR, "Change directory failed");
 		return;
 	}
-			
-	
+
+
 	strcpy(attr->cwd, path);
 	strcpy(attr->data, EXCLROOTDIR(attr->cwd, attr->rootdir));
 	SEND_DATA_TO_CLIENT(attr, RESP_CD);

@@ -19,10 +19,10 @@ void send_request_header(struct server_attr *attr)
 
 	if (write(attr->fd, &attr->req, sizeof(attr->req)) != sizeof(attr->req))
 		err_exit(errno, "write");
-		
+
 #ifdef __DEBUG__
 	char *_point_to_cstring;		/* Reduce name conflicts */
-	
+
 	_point_to_cstring = cstring(attr->req.code);
 	debug("send header: %s (%#X), length=%ld)", _point_to_cstring,
 			attr->req.code, attr->req.len);
@@ -33,7 +33,7 @@ void send_request_header(struct server_attr *attr)
 
 void send_request_data(struct server_attr *attr)
 {
-	if (write(attr->fd, attr->data, attr->req.len) != attr->req.len)	
+	if (write(attr->fd, attr->data, attr->req.len) != attr->req.len)
 		err_exit(errno, "write");
 /*	debug("send data: (%s)", attr->data);	*/
 }
@@ -43,10 +43,10 @@ void send_request_data(struct server_attr *attr)
 
 /* 	Encoding the source string src, and store it to the string pointed by args,
  * 	which separated by ':';
- * 	NOTE: 
+ * 	NOTE:
  *		string "::" for meaning ':' */
 
-/*	NOTE: 
+/*	NOTE:
  *		deprecated
 void encode_args(char *src, char *args)
 {
@@ -55,11 +55,11 @@ void encode_args(char *src, char *args)
 			break;
 		} else if (*src == ':') {
 			*args++ = ':';
-			*args++ = ':';	
+			*args++ = ':';
 		} else {
 			*args++ = *src;
 		}
-		
+
 		src++;
 	}
 	args = 0;

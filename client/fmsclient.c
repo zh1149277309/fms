@@ -38,7 +38,7 @@ static void help(void)
 static char *getcwdpr(char *s)
 {
 	char *p;
-	
+
 	if (( p = strrchr(s, '/')) != NULL) {
 		p++;
 		return (*p == 0) ? "/" : p;
@@ -52,15 +52,15 @@ static char *getpassword()
 {
 	char *p, *p2;
 	const char *const salt = "FMSIOPQWE/MNCBCKLASJZIOQWIEASD";
-	
+
 	if ((p = getpass("Entry Password: ")) == NULL)
 		err_exit(errno, "getpass");
-	
+
 	if ((p2 = crypt(p, salt)) == NULL)
 		err_exit(errno, "crypt");
 
 	bzero(p, strlen(p));
-	return p2;			
+	return p2;
 }
 
 
@@ -68,24 +68,24 @@ static char *getpassword()
 static void init_cli(char *arg, struct server_attr *attr)
 {
 	char *p, *p2;
-	
+
 	p2 = getpassword();
-	
+
 	if ((p = strchr(arg, '@')) == NULL)
 		help();
-	else	
-		*p++ = 0;	
-	
-	strcat(attr->auth.user, arg);		
+	else
+		*p++ = 0;
+
+	strcat(attr->auth.user, arg);
 	strcat(attr->auth.pwd, p2);	/* username:encrypted-password */
 	strcpy(attr->ip, p);		/* IP string */
-	
+
 	if (*attr->port == 0)
 		strcpy(attr->port, PORT);
 	strcpy(attr->cwd, "/");	/* First login, assume directory is '/'*/
-	
+
 	/*if (mkdir(DEFAULT_DL_DIR, DEFAULT_DL_DIR_MODE) == -1 &&
-			errno != EEXIST) 
+			errno != EEXIST)
 		err_exit(errno, "mkdir");*/
 	initialize_fms_readline(attr);
 	debug("initial client finish");
@@ -107,14 +107,14 @@ static int cli_conn(struct server_attr *attr)
 		err_exit(errno, "getaddrinfo");
 
 	for (rp = result; rp != NULL; rp = rp->ai_next) {
-		if ((attr->fd = socket(rp->ai_family, 
+		if ((attr->fd = socket(rp->ai_family,
 				rp->ai_socktype, rp->ai_protocol)) == -1)
 			continue;
 
 		if (connect(attr->fd, rp->ai_addr, rp->ai_addrlen) != -1)
 			break;
 		close(attr->fd);
-	}	
+	}
 	if (NULL == rp)
 		err_exit(0, "could not connect to server");
 
@@ -177,7 +177,7 @@ int main(int argc, char **argv)
 	while (1) {
 		sprintf(buf, "[%s@%s %s]$ ", attr.auth.user, attr.ip,
 			getcwdpr(attr.cwd));
-		cmd = readline(buf);	
+		cmd = readline(buf);
 
 		/* Add those commands to history */
 		if (cmd && *cmd)
@@ -195,7 +195,7 @@ int main(int argc, char **argv)
 		recv_response(&attr);
 		if (process_response(&attr) == RESP_EXIT)
 			break;
-	}	
+	}
 
 	return 0;
 }
