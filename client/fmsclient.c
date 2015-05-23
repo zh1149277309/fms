@@ -84,6 +84,7 @@ static void init_cli(char *arg, struct server_attr *attr)
 		strcpy(attr->port, PORT);
 	strcpy(attr->cwd, "/");	/* First login, assume directory is '/'*/
 
+	/* Disused implementation */
 	/*if (mkdir(DEFAULT_DL_DIR, DEFAULT_DL_DIR_MODE) == -1 &&
 			errno != EEXIST)
 		err_exit(errno, "mkdir");*/

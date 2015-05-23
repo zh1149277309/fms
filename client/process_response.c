@@ -149,7 +149,7 @@ download_next:
 
 
 /* The created directory is appending on current work directory! */
-static void create_download_dir(char *dirname)
+static void create_download_dir(char *pathname)
 {
 	char *p;
 	char tmp[PATH_MAX], dir[PATH_MAX + NAME_MAX + 1];
@@ -158,8 +158,9 @@ static void create_download_dir(char *dirname)
 
 
 	*tmp = 0;
-	strcat(tmp, DEFAULT_DL_DIR);
-	strcpy(dir, dirname);
+	/* Not implement download directory, this helpless */
+	/*strcat(tmp, DEFAULT_DL_DIR);*/
+	strcpy(dir, pathname);
 
 	while ((p = strchr(dir, '/')) != NULL) {
 		*p++ = 0;
