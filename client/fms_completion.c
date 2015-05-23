@@ -92,14 +92,19 @@ char *fms_server_file_generator(const char *text, int state)
 	char *p, t[BUFSZ];
 	int len;
 
-	rl_filename_completion_desired = 1;
+	/* Never use this flag, It may produce a bug when has same directories
+	 * both local and server, GNU Readline library will detected local
+	 * directories are exists, then auto append a slash to end of auto-
+	 * completion string. But our auto-completion string including the 
+	 * slash also. */
+	/*rl_filename_completion_desired = 1;*/
 	if (!state) {
 		/* Request the files of under the 'path' on the server, and
 		 * always return the name of files only, exclude the path! */
 		strcpy(path, text);
 		if ((p = strrchr(path, '/')) != NULL) {
-			strcpy(file, ++p);
-			*p = 0;
+			*++p = 0;
+			strcpy(file, p);
 		} else {
 			*path = 0;
 			strcpy(file, text);
@@ -121,6 +126,7 @@ char *fms_server_file_generator(const char *text, int state)
 		if (strncmp(list, file, len) == 0) {
 			strcat(t, list);
 			list = p;
+			printf("##%s##\n", t);
 			return dupstr(t);
 		}
 
