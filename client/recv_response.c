@@ -55,10 +55,10 @@ void recv_response_data(struct server_attr *attr)
 	len = attr->resp.len;
 
 	while (len > 0) {
-		if ((n = read(attr->fd, p, len)) < 0)
+		if ((n = read(attr->fd, p, len)) == -1)
 			err_exit(errno, "read");
 		else if (n == 0)
-			continue;
+			break;
 
 		p += n;
 		len -= n;

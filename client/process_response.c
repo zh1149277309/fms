@@ -124,6 +124,7 @@ download_next:
 
 	create_download_dir(filename);	/* create directory if necessary */
 	debug("file: %s, length: %ld", filename, length);
+	fprintf(stderr, "file: %s, length: %ld\n", filename, length);
 
 	/* Overwrite exist file */
 	fd = open(filename, O_WRONLY | O_CREAT, DEFAULT_DL_FILE_MODE);
