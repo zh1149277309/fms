@@ -126,7 +126,6 @@ char *fms_server_file_generator(const char *text, int state)
 		if (strncmp(list, file, len) == 0) {
 			strcat(t, list);
 			list = p;
-			printf("##%s##\n", t);
 			return dupstr(t);
 		}
 
