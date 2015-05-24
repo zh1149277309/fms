@@ -143,6 +143,7 @@ download_next:
 		PRINT_PROGRESS(str, length, n);
 	}
 
+	printf("\n");
 	close(fd);
 
 	/* Confirm does recived the RESP_DATA_FINISH flag */
@@ -325,6 +326,7 @@ static int transmit(struct server_attr *attr, char *pathname,
 		return -1;
 	}
 
+	printf("\n");
 	close(fd);
 	return 0;
 }

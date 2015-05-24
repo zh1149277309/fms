@@ -10,7 +10,7 @@
 									\
 		size = length;						\
 		while (size > 1024) { size = size / 1024; }		\
-		sprintf(str, "Upload file: %s, size: %.3g%s ", name,	\
+		sprintf(str, "Download file: %s, size: %.3g%s ", name,	\
 			size,						\
 			((unsigned long)size == length) ? "Bytes" :	\
 			((unsigned long)size == length >> 10) ? "KB" :	\
