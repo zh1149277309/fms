@@ -4,19 +4,37 @@
 #include "fmsclient.h"
 
 /* Set printable string of download file info */
-#define SET_PROGRESS(str, name, length)					\
+#define SET_PROGRESS_DOWNLOAD(str, name, length)			\
 	do {								\
 		double size;						\
 									\
 		size = length;						\
 		while (size > 1024) { size = size / 1024; }		\
-		sprintf(str, "Download file: %s, size: %.3f%s ", name,	\
+		sprintf(str, "Upload file: %s, size: %.3g%s ", name,	\
 			size,						\
+			((unsigned long)size == length) ? "Bytes" :	\
 			((unsigned long)size == length >> 10) ? "KB" :	\
 			((unsigned long)size == length >> 20) ? "MB" :	\
 			((unsigned long)size == length >> 30) ? "GB" :	\
 			"TB");						\
 	} while (0)
+
+/* Set printable string of download file info */
+#define SET_PROGRESS_UPLOAD(str, name, length)				\
+	do {								\
+		double size;						\
+									\
+		size = length;						\
+		while (size > 1024) { size = size / 1024; }		\
+		sprintf(str, "Upload file: %s, size: %.3g%s ", name,	\
+			size,						\
+			((unsigned long)size == length) ? "Bytes" :	\
+			((unsigned long)size == length >> 10) ? "KB" :	\
+			((unsigned long)size == length >> 20) ? "MB" :	\
+			((unsigned long)size == length >> 30) ? "GB" :	\
+			"TB");						\
+	} while (0)
+
 
 /* There are 42 space, x2 for overwrite the print info of last */
 #define PRINT_PROGRESS_WS "                                        "

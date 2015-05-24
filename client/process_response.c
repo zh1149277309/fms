@@ -134,7 +134,7 @@ download_next:
 		return;
 	}
 
-	SET_PROGRESS(str, filename, length);
+	SET_PROGRESS_DOWNLOAD(str, filename, length);
 	while (n <= length) {
 		recv_response(attr);
 		writen(fd, attr->data, attr->resp.len);
@@ -271,7 +271,7 @@ static int transmit(struct server_attr *attr, char *pathname,
 	int fd;
 	size_t length, n;
 	char *p;
-	char info[BUFSZ];
+	char str[BUFSZ];
 
 
 	if ((fd = open(pathname, O_RDONLY)) == -1) {
@@ -282,30 +282,35 @@ static int transmit(struct server_attr *attr, char *pathname,
 	debug("upload: %s", pathname);
 	debug("Transmit: %s", pathname);
 
-	/* File length */
+	/* File's length */
 	attr->req.len = 0;
 	length = lseek(fd, 0, SEEK_END);
 	attr->req.code = RESP_UPLOAD;
 	memcpy(attr->data, &length, sizeof(size_t));
 	attr->req.len += sizeof(size_t);
 
-	if ((p = brevity_name(pathname, dir_name_length, flags)) == NULL) {
-		err_msg(0, "Unknown brevity name");
-		return -1;
+	if (!flags) {
+		/* The pathname include filename only. */
+		n = strlen(pathname);
+		p = pathname;
+	} else if (flags == UPLOAD_INCLUDE_DIR_NAME) {
+		/* Setting the UPLOAD_INCLUDE_DIR_NAME flag */
+		p = brevity_name(pathname, dir_name_length, flags);
+		n = strlen(p);
 	}
 	printf("%s, %d\n", pathname, dir_name_length);
-	n = strlen(p);
 
-	/* file name length */
+	/* Filename's length */
 	memcpy(attr->data + attr->req.len, &n, sizeof(size_t));
 	attr->req.len += sizeof(size_t);
 
-	memcpy(attr->data + attr->req.len, p, n);	/* file name */
+	/* Filename */
+	memcpy(attr->data + attr->req.len, p, n);
 	attr->req.len += n;
 	send_request(attr);
 
 
-	SET_PROGRESS(info, p, length);
+	SET_PROGRESS_UPLOAD(str, p, length);
 
 	/* Send data to server*/
 	n = 0;
@@ -313,7 +318,7 @@ static int transmit(struct server_attr *attr, char *pathname,
 	while ((attr->req.len = read(fd, attr->data, BUFSZ - 1)) > 0) {
 		send_request(attr);
 		n += attr->req.len;
-		PRINT_PROGRESS(info, length, n);
+		PRINT_PROGRESS(str, length, n);
 	}
 
 	if (attr->resp.len == -1) {
