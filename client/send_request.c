@@ -33,9 +33,11 @@ void send_request_header(struct server_attr *attr)
 
 void send_request_data(struct server_attr *attr)
 {
-	if (write(attr->fd, attr->data, attr->req.len) != attr->req.len)
+	/*if (write(attr->fd, attr->data, attr->req.len) != attr->req.len)
 		err_exit(errno, "write");
-/*	debug("send data: (%s)", attr->data);	*/
+	*/
+	writen(attr->fd, attr->data, attr->req.len);
+	/*debug("send data: (%s)", attr->data);*/
 }
 
 

@@ -4,10 +4,11 @@ OBJ=fmsclient.o err_handler.o send_request.o recv_response.o set_request.o \
 FLAGS=-Wall -lcrypt -lreadline -lncurses $(DEBUG)
 CC=gcc
 
-debug: all
-DEBUG=-g -D__DEBUG__
 
 all: $(PROGS)
+
+debug: all
+debug: DEBUG=-g -D__DEBUG__
 
 fmsclient: $(OBJ)
 	$(CC) -o $@ $^ $(FLAGS)

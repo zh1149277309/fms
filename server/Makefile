@@ -5,10 +5,12 @@ OBJ=fmsserver.o err_handler.o auth.o conf.o recv_request.o send_response.o \
 CC=gcc
 FLAGS=-Wall -lpthread $(DEBUG)
 
-debug: all
-DEBUG=-g -D__DEBUG__
 
 all: $(PROGS)
+
+debug: all
+debug: DEBUG=-g -D__DEBUG__
+
 fmsserver: $(OBJ)
 	$(CC) -o $@ $^ $(FLAGS)
 fmspasswd: fmspasswd.c
