@@ -12,9 +12,9 @@
 #include "process_request.h"
 
 
-/*	NOTE:
+/* NOTE:
  * In general, mkdir and rm command is dangerous, so I decide to using
- *	root privilege something like linux, only root user can using those
+ * root privilege something like linux, only root user can using those
  * command listed above!  */
 int process_request(struct client_attr *attr)
 {
@@ -36,7 +36,7 @@ int process_request(struct client_attr *attr)
 		process_rm(attr);
 		break;
 	case REQ_UPLOAD:
-		/* (principle of upload)
+		/* (Principle of upload)
 		 *	step1:	client(REQ_UPLOAD) --> server(RESP_UPLOAD)
 		 *	step2:	client(files) --> server(files))
 		 *	step3:	client(REQ_DATA_FINISH --> server()) */

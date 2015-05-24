@@ -17,7 +17,7 @@ void writen(const int fd, const void *buf, unsigned int len)
 	while (len > 0) {
 		n = write(fd, buf, len);
 		if (n == -1)
-			err_msg(errno, "write");
+			err_exit(errno, "write");
 		len -= n;
 		buf += n;
 	}

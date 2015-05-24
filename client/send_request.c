@@ -17,9 +17,12 @@ inline void send_request(struct server_attr *attr)
 void send_request_header(struct server_attr *attr)
 {
 
-	if (write(attr->fd, &attr->req, sizeof(attr->req)) != sizeof(attr->req))
+	/*if (write(attr->fd, &attr->req, sizeof(attr->req)) !=
+			sizeof(attr->req))
 		err_exit(errno, "write");
+	*/
 
+	writen(attr->fd, &attr->req, sizeof(attr->req));
 #ifdef __DEBUG__
 	char *_point_to_cstring;		/* Reduce name conflicts */
 

@@ -196,7 +196,6 @@ static void process_upload(struct server_attr *attr)
 	/*if (get_upload_file(attr, pathname) == NULL)
 		return;
 	*/
-	printf("#%s#\n", pathname);
 	if (stat(pathname, &sb) == -1) {
 		err_msg(errno, "stat");
 		return;

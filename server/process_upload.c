@@ -18,10 +18,12 @@ void process_upload(struct client_attr *attr)
 	char pathname[PATH_MAX + NAME_MAX + 1];
 
 
+	/* Waiting the data transmited by client */
+	recv_request(attr);
 download_next:
 	/* Format: | size_t file-length | size_t file-name-length | file-name */
-	length = *((int *)attr->data);
-	n = *((int *)(attr->data + sizeof(size_t)));
+	length = *((size_t *)attr->data);
+	n = *((size_t *)(attr->data + sizeof(size_t)));
 
 	bzero(pathname, PATH_MAX + NAME_MAX + 1);
 	strcpy(pathname, attr->cwd);

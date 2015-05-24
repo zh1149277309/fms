@@ -79,7 +79,7 @@ void recv_request_data(struct client_attr *attr)
 		if ((n = read(attr->fd, p, len)) < 0)
 			err_thread_exit(attr->fd, errno, "read");
 		else if (n == 0)
-			continue;
+			err_thread_exit(attr->fd, 0, "client closed");
 
 		p += n;
 		len -= n;
