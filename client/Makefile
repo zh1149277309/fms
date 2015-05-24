@@ -4,7 +4,10 @@ OBJ=fmsclient.o err_handler.o send_request.o recv_response.o set_request.o \
 FLAGS=-Wall -lcrypt -lreadline -lncurses $(DEBUG)
 CC=gcc
 
-ALL: $(PROGS)
+debug: all
+DEBUG=-g -D__DEBUG__
+
+all: $(PROGS)
 
 fmsclient: $(OBJ)
 	$(CC) -o $@ $^ $(FLAGS)
@@ -21,5 +24,6 @@ uninstall:
 	$(RM) /bin/fmsclient
 
 clean:
-	$(RM) $(OBJ) $(PROGS)
+	$(RM) $(PROGS)
 	$(RM) $(wildcard *.h.gch)
+	$(RM) $(wildcard *.o)

@@ -111,6 +111,7 @@ static void process_download(struct server_attr *attr)
 {
 	int fd;
 	size_t length, n;
+	char str[BUFSZ];
 	char filename[NAME_MAX + 1];
 
 
@@ -123,8 +124,8 @@ download_next:
 	*(filename + n) = 0;
 
 	create_download_dir(filename);	/* create directory if necessary */
-	debug("file: %s, length: %ld", filename, length);
-	fprintf(stderr, "file: %s, length: %ld\n", filename, length);
+	
+
 
 	/* Overwrite exist file */
 	fd = open(filename, O_WRONLY | O_CREAT, DEFAULT_DL_FILE_MODE);
@@ -133,10 +134,13 @@ download_next:
 		return;
 	}
 
-	while (length > 0) {
+	SET_PROGRESS(str, filename, length);
+	while (n <= length) {
 		recv_response(attr);
 		writen(fd, attr->data, attr->resp.len);
-		length -= attr->resp.len;
+
+		n += attr->resp.len;
+		PRINT_PROGRESS(str, length, n);
 	}
 
 	close(fd);
@@ -188,9 +192,11 @@ static void process_upload(struct server_attr *attr)
 	struct stat sb;
 
 
-	/* strcpy(pathname, attr->data);	*/
-	if (get_upload_file(attr, pathname) == NULL)
+	strcpy(pathname, attr->data);
+	/*if (get_upload_file(attr, pathname) == NULL)
 		return;
+	*/
+	printf("#%s#\n", pathname);
 	if (stat(pathname, &sb) == -1) {
 		err_msg(errno, "stat");
 		return;
@@ -265,6 +271,7 @@ static int transmit(struct server_attr *attr, char *pathname,
 	int fd;
 	size_t length, n;
 	char *p;
+	char info[BUFSZ];
 
 
 	if ((fd = open(pathname, O_RDONLY)) == -1) {
@@ -275,10 +282,11 @@ static int transmit(struct server_attr *attr, char *pathname,
 	debug("upload: %s", pathname);
 	debug("Transmit: %s", pathname);
 
+	/* File length */
 	attr->req.len = 0;
 	length = lseek(fd, 0, SEEK_END);
 	attr->req.code = RESP_UPLOAD;
-	memcpy(attr->data, &length, sizeof(size_t));	/* file length */
+	memcpy(attr->data, &length, sizeof(size_t));
 	attr->req.len += sizeof(size_t);
 
 	if ((p = brevity_name(pathname, dir_name_length, flags)) == NULL) {
@@ -296,10 +304,16 @@ static int transmit(struct server_attr *attr, char *pathname,
 	attr->req.len += n;
 	send_request(attr);
 
+
+	SET_PROGRESS(info, p, length);
+
 	/* Send data to server*/
+	n = 0;
 	lseek(fd, 0, SEEK_SET);
 	while ((attr->req.len = read(fd, attr->data, BUFSZ - 1)) > 0) {
 		send_request(attr);
+		n += attr->req.len;
+		PRINT_PROGRESS(info, length, n);
 	}
 
 	if (attr->resp.len == -1) {

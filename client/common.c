@@ -27,8 +27,10 @@ void writen(const int fd, const void *buf, unsigned int len)
 
 char *get_upload_file(struct server_attr *attr, char *pathname)
 {
-	if ((resolve_path(attr, pathname) == -1) ||
+	/*if ((resolve_path(attr, pathname) == -1) ||
 			(depth_resolve_path(attr, pathname) == -1))
+	*/
+	if (depth_resolve_path(attr, pathname) == -1)
 		return NULL;
 
 	debug("Upload file: %s", pathname);
@@ -63,48 +65,69 @@ int resolve_path(struct server_attr *attr, char *path)
 }
 
 
+/* Return 0, if path resolving have done, and new path security_checking()
+ * is okay, or return -1, if security_checking() failed.
+ * Example:
+ * 	/var/fms/test/a/../../
+ *	step1: /var/fms/test/../
+ *	step2: /var/fms/	*/
 int depth_resolve_path(struct server_attr *attr, char *path)
 {
 	char tmp[PATH_MAX];
 	char *p, *p2;
 	char c1, c2;
 
-	strcpy(tmp, path);
-	while ((p = strstr(path, "..")) != NULL) {
+
+	while (1) {
+		/* Following if statement showing three situations, them are:
+		 * not ".." specified, "foo..", "foo/..bar" */
+		if ((p = strstr(path, "..")) == NULL ||
+				*(p - 1) != '/' ||
+				(*(p + 2) != '/' && *(p + 2) != 0))
+			break;
+
 		*(p - 1) = 0;
 		if ((p2 = strrchr(path, '/')) != NULL)
 			*p2 = 0;
-		else
-			break;
 
 		strcpy(tmp, path);
 		strcat(tmp, p + 2);
 		strcpy(path, tmp);
 	}
 
+	/* Removeing the character '.' in the path
+	 * Example:
+	 *	/foo/bar/.		REMOVE
+	 *	./foo/bar 		REMOVE
+	 *	/foo/./bar		REMOVE
+	 *	/foo.bar		OK		*/
 	p2 = path;
 	while ((p = strchr(p2, '.')) != NULL) {
 		c1 = *(p - 1);
 		c2 = *(p + 1);
 
-		if (( c1>= 'A' && c2 <= 'Z') || (c1 >= 'a' && c2 <= 'z')) {
-			p2 = p + 1;
-		} if (c1 == '/' && c2 == '/') {
-			*(p - 1) = 0;
+		if (c1 == '/' && c2 == '/') {
+			*p = 0;
 			strcpy(tmp, path);
 			strcat(tmp, p + 2);
 			strcpy(path, tmp);
 		} else if (c1 == '/') {
 			*(p - 1) = 0;
 		} else if (c2 == '/') {
-			strcpy(tmp, p + 2);
-			strcpy(path, tmp);
+			strcpy(path, p + 2);
 		}
+
+		p2 = p + 1;
 	}
+
+	/* Relative path must start with '/' */
+	if (*path == 0)
+		strcat(path, "/");
 
 	debug("path: (%s)", path);
 	return 0;
 }
+
 
 
 /* Return converted request or response string on success, or NULL if allocate
