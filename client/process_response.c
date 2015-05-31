@@ -125,7 +125,7 @@ static void process_pwd(struct server_attr *attr)
 static void process_download(struct server_attr *attr)
 {
 	int fd;
-	unsigned length, n;
+	unsigned int length, n;
 	char str[BUFSZ];
 	char filename[NAME_MAX + 1];
 

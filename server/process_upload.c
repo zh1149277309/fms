@@ -38,7 +38,7 @@ void process_upload(struct client_attr *attr)
 download_next:
 	/* Format: | uint file-length | uint file-name-length | file-name */
 	length = *((unsigned int *)attr->data);
-	n = *((unsigned *)(attr->data + sizeof(length)));
+	n = *((unsigned int *)(attr->data + sizeof(length)));
 
 	bzero(pathname, PATH_MAX + NAME_MAX + 1);
 	strcpy(pathname, attr->cwd);

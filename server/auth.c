@@ -69,9 +69,10 @@ int auth(struct client_attr *attr)
  		err_thread_exit(attr->fd, 0, "Not a authentication request");
  	}
 
-
-	if ((p = strchr(attr->data, ':')) == NULL) /* username:encrypted-passwd */
-		err_thread_exit(attr->fd, 0, "Unrecogonized format of authentication");
+	/* username:encrypted-passwd */
+	if ((p = strchr(attr->data, ':')) == NULL)
+		err_thread_exit(attr->fd, 0,
+			"Unrecogonized format of authentication");
 	else
 		*p++ = 0;
 
@@ -97,9 +98,10 @@ int auth(struct client_attr *attr)
 
 
 
-/*  NOTE:
+/* 
  * You can implement a root privilege user list, if necessary!
- *	Return 0 if user has root privileges, otherwise, return -1.	*/
+ * Return 0 if user has root privileges, otherwise, return -1.
+ */
 int get_root_privilege(struct client_attr *attr)
 {
 	if (strcmp("root", attr->usrinfo.user) == 0)
@@ -107,9 +109,6 @@ int get_root_privilege(struct client_attr *attr)
 
 	return -1;
 }
-
-
-
 
 
 /* Return 1 on success, otherwise, 0 is returned if authentication failed */
@@ -126,7 +125,7 @@ static int is_auth_ok(char *file, char *u, char *p)
 	}
 
 	while (pass_read(user, pwd, fp) != -1) {
-	/*	debug("strcmp: user(%s, %s) pwd(%s, %s)", user, u, pwd, p);	*/
+		/*debug("strcmp: user(%s, %s) pwd(%s, %s)", user, u, pwd, p);*/
 		if (strcmp(user, u) == 0 && strcmp(pwd, p) == 0) {
 			auth_ok = 1;
 			break;
@@ -141,7 +140,7 @@ static int is_auth_ok(char *file, char *u, char *p)
 /* Return 0 on success, otherwise, -1 is returned */
 static int pass_init(char *file, FILE **fp)
 {
-/*	debug("password file=%s", file);	*/
+	/*debug("password file=%s", file);*/
 	if ((*fp = fopen(file, "r")) == NULL) {
 		err_msg(errno, "fopen");
 		return -1;
@@ -165,7 +164,7 @@ static int pass_read(char *user, char *pwd, FILE *fp)
 	strcpy(user, buf);
 	strcpy(pwd, p);
 
-	if ((p = strchr(pwd, '\n')) != NULL)	/* Strip at the end of newline */
+	if ((p = strchr(pwd, '\n')) != NULL)/* Strip at the end of newline */
 		*p = 0;
 	return 0;
 }
@@ -178,8 +177,8 @@ static void pass_close(FILE *fp)
 
 
 
-/* NOTE:
- *     deprecated, instead by recv_request()
+/*
+ * deprecated, instead by recv_request()
  * Read n bytes data, much simple
 static void readn(int fd, char *buf, unsigned long len)
 {
@@ -191,7 +190,7 @@ static void readn(int fd, char *buf, unsigned long len)
 	}
 
 	*(buf + len) = 0;
-}	*/
+}*/
 
 
 
