@@ -21,7 +21,7 @@
 #ifndef PATH_MAX
 #define PATH_MAX	4096
 #endif
-#define BUFSZ	1024
+#define BUFSZ	4096
 #define DEFAULT_UPLOAD_FILE_MODE 0700
 
 

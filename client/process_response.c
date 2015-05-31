@@ -188,11 +188,11 @@ static void create_download_dir(char *pathname)
 
 		/* Relative path name, create the directory if it does not
 		 * exist */
-		printf("###%s##\n", tmp);
 		if (stat(dir, &sb) == -1 && errno == ENOENT) {
 			if (mkdir(dir, DEFAULT_DL_DIR_MODE) == -1)
 				debug("mkdir: ");
 		}
+
 		*p++ = '/';
 		pdir = p;
 	}
