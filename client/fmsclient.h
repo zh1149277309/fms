@@ -23,7 +23,7 @@
 #define DEFAULT_DL_FILE_MODE		0640
 
 #define PORT	"40325"		/* Default port number and configure file*/
-#define BUFSZ	1024
+#define BUFSZ	4096
 #ifndef INET_ADDRSTRLEN
 #define INET_ADDRSTRLLEN	16	/* xxx.xxx.xxx.xxx + '\0' */
 #endif

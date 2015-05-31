@@ -173,29 +173,28 @@ download_next:
 /* The created directory is appending on current work directory! */
 static void create_download_dir(char *pathname)
 {
-	char *p;
+	char *p, *pdir;
 	char tmp[PATH_MAX], dir[PATH_MAX + NAME_MAX + 1];
 	struct stat sb;
 
 
-
-	*tmp = 0;
 	/* Not implement download directory, this helpless */
 	/*strcat(tmp, DEFAULT_DL_DIR);*/
 	strcpy(dir, pathname);
+	pdir = dir;
 
-	while ((p = strchr(dir, '/')) != NULL) {
-		*p++ = 0;
+	while ((p = strchr(pdir, '/')) != NULL) {
+		*p = 0;
 
-		strcat(tmp, dir);
-		strcat(tmp, "/");
-		/*  Relative path name, create the directory if it does not
-		 *  exist */
-		if (stat(tmp, &sb) == -1 && errno == ENOENT) {
-			while (mkdir(tmp, DEFAULT_DL_DIR_MODE) == -1);
+		/* Relative path name, create the directory if it does not
+		 * exist */
+		printf("###%s##\n", tmp);
+		if (stat(dir, &sb) == -1 && errno == ENOENT) {
+			if (mkdir(dir, DEFAULT_DL_DIR_MODE) == -1)
+				debug("mkdir: ");
 		}
-
-		strcpy(dir, p);
+		*p++ = '/';
+		pdir = p;
 	}
 }
 
