@@ -151,7 +151,7 @@ download_next:
 
 	SET_PROGRESS_DOWNLOAD(str, filename, length);
 	n = 0;
-	while (n <= length) {
+	while (n < length) {
 		recv_response(attr);
 		writen(fd, attr->data, attr->resp.len);
 
