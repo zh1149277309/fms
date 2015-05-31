@@ -42,7 +42,7 @@ void send_request_header(struct server_attr *attr)
 	char *_point_to_cstring;		/* Reduce name conflicts */
 
 	_point_to_cstring = cstring(attr->req.code);
-	debug("send header: %s (%#X), length=%ld)", _point_to_cstring,
+	debug("send header: %s (%#X), length=%d)", _point_to_cstring,
 			attr->req.code, attr->req.len);
 	free(_point_to_cstring);
 #endif
@@ -55,7 +55,7 @@ void send_request_data(struct server_attr *attr)
 		err_exit(errno, "write");
 	*/
 	writen(attr->fd, attr->data, attr->req.len);
-	/*debug("send data: (%s)", attr->data);*/
+	debug("send data: (%s)", attr->data);
 }
 
 

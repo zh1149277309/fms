@@ -52,7 +52,7 @@ void recv_response_header(struct server_attr *attr)
 	char *_point_to_cstring;		/* Reduce name conflicts */
 
 	_point_to_cstring = cstring(attr->resp.code);
-	debug("receive header: %s (%#X), length=%ld)", _point_to_cstring,
+	debug("receive header: %s (%#X), length=%d)", _point_to_cstring,
 			attr->resp.code, attr->resp.len);
 	free(_point_to_cstring);
 #endif

@@ -51,14 +51,14 @@
 	} while (0)
 
 
-/* There are 42 space, x2 for overwrite the print info of last */
-#define PRINT_PROGRESS_WS "                                        "
+/* There are 40 space, x2 for overwrite the print info of last */
+#define PRINT_PROGRESS_WS "                                      "
 
 #define PRINT_PROGRESS(str, length, nread)			\
 	do {							\
 		printf("\r"PRINT_PROGRESS_WS PRINT_PROGRESS_WS);\
-		printf("\r%s", str);				\
-		printf("[%2ld%%]", (nread * 100 / length));	\
+		printf("\r%-74s", str);				\
+		printf("[%2d%%]", (nread * 100 / length));	\
 		fflush(stdout);					\
 	} while(0)
 
