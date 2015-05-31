@@ -125,17 +125,17 @@ static void process_pwd(struct server_attr *attr)
 static void process_download(struct server_attr *attr)
 {
 	int fd;
-	size_t length, n;
+	unsigned length, n;
 	char str[BUFSZ];
 	char filename[NAME_MAX + 1];
 
 
 download_next:
-	/* Format: | size_t file-length | size_t file-name-length | file-name */
+	/* Format: | uint file-length | uint file-name-length | file-name */
 	length = *((int *)attr->data);
 
-	n = *((int *)(attr->data + sizeof(size_t)));
-	strncpy(filename, (attr->data + sizeof(size_t) * 2), n);
+	n = *((int *)(attr->data + sizeof(length)));
+	strncpy(filename, (attr->data + sizeof(length) * 2), n);
 	*(filename + n) = 0;
 
 	create_download_dir(filename);	/* create directory if necessary */
@@ -284,7 +284,7 @@ static int transmit(struct server_attr *attr, char *pathname,
 		int dir_name_length, int flags)
 {
 	int fd;
-	size_t length, n;
+	unsigned int length, n;
 	char *p;
 	char str[BUFSZ];
 
@@ -301,8 +301,8 @@ static int transmit(struct server_attr *attr, char *pathname,
 	attr->req.len = 0;
 	length = lseek(fd, 0, SEEK_END);
 	attr->req.code = RESP_UPLOAD;
-	memcpy(attr->data, &length, sizeof(size_t));
-	attr->req.len += sizeof(size_t);
+	memcpy(attr->data, &length, sizeof(length));
+	attr->req.len += sizeof(length);
 
 	if (!flags) {
 		/* The pathname include filename only. */
@@ -316,8 +316,8 @@ static int transmit(struct server_attr *attr, char *pathname,
 	printf("%s, %d\n", pathname, dir_name_length);
 
 	/* Filename's length */
-	memcpy(attr->data + attr->req.len, &n, sizeof(size_t));
-	attr->req.len += sizeof(size_t);
+	memcpy(attr->data + attr->req.len, &n, sizeof(n));
+	attr->req.len += sizeof(n);
 
 	/* Filename */
 	memcpy(attr->data + attr->req.len, p, n);
@@ -350,7 +350,7 @@ static int transmit(struct server_attr *attr, char *pathname,
 
 static int set_dir_name_length(char *pathname, int *dir_name_length)
 {
-	size_t s;
+	unsigned int s;
 	char *p;
 
 

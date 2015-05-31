@@ -133,7 +133,7 @@ static int transmit(struct client_attr *attr, char *pathname,
 		int dir_name_length, int flags)
 {
 	int fd;
-	size_t length, n;
+	unsigned int length, n;
 	char *p;
 
 
@@ -148,8 +148,8 @@ static int transmit(struct client_attr *attr, char *pathname,
 	attr->resp.len = 0;
 	length = lseek(fd, 0, SEEK_END);
 	attr->resp.code = RESP_DOWNLOAD;
-	memcpy(attr->data, &length, sizeof(size_t));
-	attr->resp.len += sizeof(size_t);
+	memcpy(attr->data, &length, sizeof(length));
+	attr->resp.len += sizeof(length);
 
 	if ((p = brevity_name(pathname, dir_name_length, flags)) == NULL) {
 		SEND_DL_ERR_TO_CLIENT(attr, "Unknown brevity name");
@@ -158,10 +158,10 @@ static int transmit(struct client_attr *attr, char *pathname,
 
 	/* Length of the file name */
 	n = strlen(p);
-	memcpy(attr->data + attr->resp.len, &n, sizeof(size_t));
+	memcpy(attr->data + attr->resp.len, &n, sizeof(n));
+	attr->resp.len += sizeof(n);
 
 	/* File name */
-	attr->resp.len += sizeof(size_t);
 	memcpy(attr->data + attr->resp.len, p, n);
 
 	/* Send file information to client */
@@ -187,7 +187,7 @@ static int transmit(struct client_attr *attr, char *pathname,
 
 static int set_dir_name_length(char *pathname, int *dir_name_length)
 {
-	size_t s;
+	unsigned int s;
 	char *p;
 
 

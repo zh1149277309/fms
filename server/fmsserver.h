@@ -27,12 +27,12 @@
 
 struct request {
 	unsigned int code;		/* Request code */
-	unsigned long len;		/* The length of data */
+	unsigned len;		/* The length of data */
 };
 
 struct response {
 	unsigned int code;		/* Requests code */
-	unsigned long len;		/* The length of data */
+	unsigned len;		/* The length of data */
 };
 
 struct user_info {

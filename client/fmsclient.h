@@ -67,12 +67,12 @@
 
 struct request {			/* All requests types of client */
 	unsigned int code;		/* Requests code */
-	unsigned long len;		/* The length of data */
+	unsigned int len;		/* The length of data */
 };
 
 struct response {
 	unsigned int code;		/* Requests code */
-	unsigned long len;		/* The length of data */
+	unsigned int len;		/* The length of data */
 };
 
 

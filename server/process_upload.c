@@ -29,23 +29,23 @@ static void create_upload_dir(struct client_attr *attr, char *dirname);
 void process_upload(struct client_attr *attr)
 {
 	int fd;
-	size_t length, n;
+	unsigned int length, n;
 	char pathname[PATH_MAX + NAME_MAX + 1];
 
 
 	/* Waiting the data transmited by client */
 	recv_request(attr);
 download_next:
-	/* Format: | size_t file-length | size_t file-name-length | file-name */
-	length = *((size_t *)attr->data);
-	n = *((size_t *)(attr->data + sizeof(size_t)));
+	/* Format: | uint file-length | uint file-name-length | file-name */
+	length = *((unsigned int *)attr->data);
+	n = *((unsigned *)(attr->data + sizeof(length)));
 
 	bzero(pathname, PATH_MAX + NAME_MAX + 1);
 	strcpy(pathname, attr->cwd);
 	if (*(pathname + strlen(pathname) - 1) != '/')
 		strcat(pathname, "/");
 
-	strncat(pathname, (attr->data + sizeof(size_t) * 2), n);
+	strncat(pathname, (attr->data + sizeof(length) * 2), n);
 
 
 	create_upload_dir(attr, pathname);/* create directory if necessary */
