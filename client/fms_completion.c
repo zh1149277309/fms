@@ -70,6 +70,7 @@ char **fms_completion(const char *text, int start, int end)
 		else
 			matches = rl_completion_matches(text,
 					fms_server_file_generator);
+
 	}
 
 	return matches;
@@ -112,14 +113,14 @@ char *fms_server_file_generator(const char *text, int state)
 	 * directories are exists, then auto append a slash to end of auto-
 	 * completion string. But our auto-completion string including the 
 	 * slash also. */
-	/*rl_filename_completion_desired = 1;*/
+	rl_filename_completion_desired = 1;
 	if (!state) {
 		/* Request the files of under the 'path' on the server, and
 		 * always return the name of files only, exclude the path! */
 		strcpy(path, text);
 		if ((p = strrchr(path, '/')) != NULL) {
-			*++p = 0;
-			strcpy(file, p);
+			strcpy(file, ++p);
+			*p = 0;
 		} else {
 			*path = 0;
 			strcpy(file, text);

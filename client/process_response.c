@@ -174,7 +174,7 @@ download_next:
 static void create_download_dir(char *pathname)
 {
 	char *p, *pdir;
-	char tmp[PATH_MAX], dir[PATH_MAX + NAME_MAX + 1];
+	char dir[PATH_MAX + NAME_MAX + 1];
 	struct stat sb;
 
 
