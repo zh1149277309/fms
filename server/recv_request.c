@@ -21,17 +21,6 @@
 #include "recv_request.h"
 
 
-
-/* Receive request from the client, */
-inline void recv_request(struct client_attr *attr)
-{
-/*	debug("reciving request header...");	*/
-	recv_request_header(attr);
-/*	debug("reciving request data...");	*/
-	recv_request_data(attr);
-}
-
-
 /* Decoding the source string src, and store results to the string points
  * by args;
 void decode_args(char *src, char *args)
@@ -76,7 +65,7 @@ void recv_request_header(struct client_attr *attr)
 	char *_point_to_cstring;		/* Reduce name conflicts */
 
 	_point_to_cstring = cstring(attr->req.code);
-	debug("receive header: %s (%#X), length=%ld)", _point_to_cstring,
+	debug("receive header: %s (%#X), length=%d)", _point_to_cstring,
 			attr->req.code, attr->req.len);
 	free(_point_to_cstring);
 #endif

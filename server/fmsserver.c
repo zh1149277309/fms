@@ -188,7 +188,7 @@ static void server_init(char *file)
 		strcpy(conf.rootdir, p);
 	free(p);
 
-	p = (conf.rootdir + strlen(conf.rootdir) - 1);
+	p = conf.rootdir + strlen(conf.rootdir) - 1;
 	if (*p == '/')			/* Ensure no '/' end with rootdir */
 		*p = 0;
 

@@ -22,13 +22,6 @@
 
 
 
-inline void send_request(struct server_attr *attr)
-{
-	send_request_header(attr);
-	send_request_data(attr);
-}
-
-
 void send_request_header(struct server_attr *attr)
 {
 

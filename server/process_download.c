@@ -43,21 +43,19 @@ static void download_recursive(struct client_attr *attr, char *path,
 					int dir_name_length);
 
 /* Response data format:
- *		first:	send 'length' + 'pathname';
- *		then:	send 'data's...
- *	NOTE:
- *		single thread for download;
- *		no support wildcard, like '*';
- *		no support download the whole directory;
- *
- *		If possible, I will implement thems; */
+ *	first:	send 'length' + 'pathname';
+ *	then:	send 'data's...
+ * NOTE:
+ *	single thread for download;
+ *	no support wildcard, like '*';
+ *	no support download the whole directory;
+ *	If possible, I will implement thems; */
 int process_download(struct client_attr *attr)
 {
 	int dir_name_length;
 	char pathname[PATH_MAX + NAME_MAX];
 	struct stat sb;
 
-	/*	Get fully path name */
 	if (get_download_file(attr, pathname) == NULL) {
 		SEND_DL_ERR_TO_CLIENT(attr, "Unknow file name");
 		return -1;

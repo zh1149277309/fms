@@ -12,7 +12,7 @@ debug: DEBUG=-g -D__DEBUG__
 
 fmsclient: $(OBJ)
 	$(CC) -o $@ $^ $(FLAGS)
-%.o: %.c
+%.o: %.c %.h
 	$(CC) -c $^ $(FLAGS)
 
 install:

@@ -17,8 +17,12 @@
 #define _SEND_RESPONSE_H
 #include "fmsserver.h"
 
-inline void send_response(struct client_attr *attr);
 void send_response_header(struct client_attr *attr);
 void send_response_data(struct client_attr *attr);
 
+static inline void send_response(struct client_attr *attr)
+{
+	send_response_header(attr);
+	send_response_data(attr);
+}
 #endif

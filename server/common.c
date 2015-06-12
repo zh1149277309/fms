@@ -52,7 +52,6 @@ int resolve_path(struct client_attr *attr, char *path)
 	 * if "\ " does exist, that's always transmitted by the attr->data */
 	escape_space(attr->data);
 
-
 	/* Follow the requests must need arguments, so if not! return -1 */
 	if ((attr->req.code == REQ_CD || attr->req.code == REQ_MKDIR ||
 			attr->req.code == REQ_RM ||
@@ -63,7 +62,7 @@ int resolve_path(struct client_attr *attr, char *path)
 	} else if (attr->req.len == 0)	{
 		/* No arguments are specified, using the current directory */
 		strcpy(path, attr->cwd);
-	} else if (*(attr->data) == '/') {
+	} else if (*attr->data == '/') {
 		/* Argument is the abosolute path, ls /absolute/path */
 		strcpy(path, attr->rootdir);
 		strcat(path, attr->data);
@@ -98,13 +97,13 @@ int depth_resolve_path(struct client_attr *attr, char *path)
 	char *p, *p2;
 	char c1, c2;
 
-	/* Now, path point to the relative path */
+	/* Now, path point to the address of relative path */
 	path = path + strlen(attr->rootdir);
 	while (1) {
 		/* Following if statement showing three situations, them are:
 		 * not ".." specified, "foo..", "foo/..bar" */
 		if ((p = strstr(path, "..")) == NULL ||
-				*(p - 1) != '/' ||
+				((p > path) && *(p - 1) != '/' )||
 				(*(p + 2) != '/' && *(p + 2) != 0))
 			break;
 
@@ -117,7 +116,7 @@ int depth_resolve_path(struct client_attr *attr, char *path)
 		strcpy(path, tmp);
 	}
 
-	/* Removeing the character '.' in the path
+	/* Removing the character '.' in the path
 	 * Example:
 	 *	/foo/bar/.		REMOVE
 	 *	./foo/bar 		REMOVE
@@ -175,8 +174,6 @@ char *get_download_file(struct client_attr *attr, char *pathname)
 	/* Specified the path */
 	if ((p = strrchr(attr->data, '/')) != NULL) {
 		*p = 0;
-
-
 		if (resolve_path(attr, pathname) == -1){
 			/* SEND_ERR_TO_CLIENT(attr, RESP_DOWNLOAD_ERR,
 			 	"Missing operand");	*/
@@ -189,6 +186,7 @@ char *get_download_file(struct client_attr *attr, char *pathname)
 			return NULL;
 		}
 
+		*p = '/';
 		strcat(pathname, p);
 	} else {
 		strcpy(pathname, attr->cwd);
@@ -205,6 +203,43 @@ char *get_download_file(struct client_attr *attr, char *pathname)
 }
 
 
+/* About space ' ' separate, since we using space as default separate, If
+ * we need input the space in the file name or path name, user should typed
+ * backslash '\' first and append space ' ' second, forms like:'"foo\ bar",
+ * the parsing result is "foo bar"*/
+static void escape_space(char *buf)
+{
+	char *p, *p2;
+
+	p2 = buf;
+	while ((p = strstr(p2, "\\ ")) != NULL) {
+		*p++ = 0;
+
+		/* p point to space ' ' which after backslash '\' */
+		strcat(buf, p);
+		p2 = buf;
+	}
+}
+
+/* Return 0, if new path is security, otherwise, or -1 returned */
+static int security_checking(struct client_attr *attr, char *path)
+{
+	int i;
+	struct stat sb;
+
+
+	debug("security_checking: root=%s, path=%s", attr->rootdir, path);
+	i = strlen(attr->rootdir);
+	if (strncmp(attr->rootdir, path, i) != 0)
+		return -1;
+
+	/* ls command only support argument is directory, not files */
+	if (attr->req.code == REQ_CD /*|| attr->req.code == REQ_LS*/)
+		if (stat(path, &sb) != 0 || (sb.st_mode & S_IFMT) != S_IFDIR)
+			return -1;
+
+	return 0;
+}
 
 
 /* Return converted request or response string on success, or NULL if allocate
@@ -279,44 +314,4 @@ char *cstring(unsigned int code)
 	default:
 		RETURN("UNKNOWN CODE: (%#X)", code);
 	}
-}
-
-
-
-/* About space ' ' separate, since we using space as default separate, If
- * we need input the space in the file name or path name, user should typed
- * backslash '\' first and append space ' ' second, forms like:'"foo\ bar",
- * the parsing result is "foo bar"*/
-static void escape_space(char *buf)
-{
-	char *p, *p2;
-
-	p2 = buf;
-	while ((p = strstr(p2, "\\ ")) != NULL) {
-		*p++ = 0;
-
-		/* p point to space ' ' which after backslash '\' */
-		strcat(buf, p);
-		p2 = buf;
-	}
-}
-
-/* Return 0, if new path is security, otherwise, or -1 returned */
-static int security_checking(struct client_attr *attr, char *path)
-{
-	int i;
-	struct stat sb;
-
-
-	debug("security_checking: root=%s, path=%s", attr->rootdir, path);
-	i = strlen(attr->rootdir);
-	if (strncmp(attr->rootdir, path, i) != 0)
-		return -1;
-
-	/* ls command only support argument is directory, not files */
-	if (attr->req.code == REQ_CD /*|| attr->req.code == REQ_LS*/)
-		if (stat(path, &sb) != 0 || (sb.st_mode & S_IFMT) != S_IFDIR)
-			return -1;
-
-	return 0;
 }

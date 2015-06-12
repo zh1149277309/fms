@@ -21,15 +21,6 @@
 #include "recv_response.h"
 
 
-
-inline void recv_response(struct server_attr *attr)
-{
-	recv_response_header(attr);
-	recv_response_data(attr);
-}
-
-
-
 void recv_response_header(struct server_attr *attr)
 {
 	void *p;

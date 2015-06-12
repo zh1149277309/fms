@@ -111,15 +111,11 @@ static void process_cd(struct server_attr *attr)
 }
 
 
-
-
 /* Print the response from the server only */
 static void process_pwd(struct server_attr *attr)
 {
 	printf("%s\n", attr->data);
 }
-
-
 
 
 static void process_download(struct server_attr *attr)
@@ -156,6 +152,7 @@ download_next:
 		writen(fd, attr->data, attr->resp.len);
 
 		n += attr->resp.len;
+		printf("%d / %d\n", n, length);
 		PRINT_PROGRESS(str, length, n);
 	}
 

@@ -49,7 +49,7 @@ download_next:
 
 
 	create_upload_dir(attr, pathname);/* create directory if necessary */
-	debug("file: %s, length: %ld", pathname, length);
+	debug("file: %s, length: %d", pathname, length);
 
 	/* Overwrite exist file */
 	if ((fd = open(pathname, O_WRONLY | O_CREAT,

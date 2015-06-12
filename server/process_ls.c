@@ -16,6 +16,7 @@
 /* #define _BSD_SOURCE		Depreccated */
 #define _DEFAULT_SOURCE
 #include <unistd.h>
+#include <sys/stat.h>
 #include <string.h>
 #include <dirent.h>
 #include <stddef.h>
@@ -39,16 +40,17 @@ void process_ls(struct client_attr *attr)
 	DIR *dp;
 	char path[PATH_MAX];
 	char buf[BUFSZ];
+	char tmp[BUFSZ];
 	struct dirent *entry, *result;
-	/*struct stat sb;*/
+	struct stat sb;
 
 	/* Resolving the  */
 	if (getpath(attr, path) == -1) {
 		SEND_ERR_TO_CLIENT(attr, RESP_LS_ERR, "Bad path");
 		return;
 	}
-	/*
-	if (stat(path, &sb) == -1) {
+
+	/*if (stat(path, &sb) == -1) {
 		SEND_ERR_TO_CLIENT(attr, RESP_LS_ERR, "%s", strerror(errno));
 		return;
 	}*/
@@ -76,10 +78,15 @@ void process_ls(struct client_attr *attr)
 			continue;
 
 		strcpy(buf, entry->d_name);
-		if (entry->d_type == DT_DIR)	/* DT_DIR not bit mask */
+		if ((entry->d_type == DT_DIR) ||
+				(entry->d_type == DT_LNK &&
+				strcpy(tmp, path) &&
+				strcat(tmp, entry->d_name) &&
+				stat(tmp, &sb) != -1 &&
+				S_ISDIR(sb.st_mode)))
 			strcat(buf, "/");
-		strcat(buf, ":");
 
+		strcat(buf, ":");
 
 		n = strlen(buf);
 		if (attr->resp.len + n >= BUFSZ) {
