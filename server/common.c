@@ -209,15 +209,12 @@ char *get_download_file(struct client_attr *attr, char *pathname)
  * the parsing result is "foo bar"*/
 static void escape_space(char *buf)
 {
-	char *p, *p2;
+	char *p1, *p2;
 
-	p2 = buf;
-	while ((p = strstr(p2, "\\ ")) != NULL) {
-		*p++ = 0;
-
-		/* p point to space ' ' which after backslash '\' */
-		strcat(buf, p);
-		p2 = buf;
+	p1 = p2 = buf;
+	while ((p1 = strstr(p1, "\\ ")) != NULL) {
+		*p1++ = 0;
+		strcat(buf, p1);
 	}
 }
 
