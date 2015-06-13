@@ -58,7 +58,7 @@
 	do {							\
 		printf("\r"PRINT_PROGRESS_WS PRINT_PROGRESS_WS);\
 		printf("\r%-73s", str);				\
-		printf("[%2.1f%%]", (nread / length) * 100);	\
+		printf("[%2.1f%%]", ((float)nread / length) * 100);	\
 		fflush(stdout);					\
 	} while(0)
 
