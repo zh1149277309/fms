@@ -152,7 +152,6 @@ download_next:
 		writen(fd, attr->data, attr->resp.len);
 
 		n += attr->resp.len;
-		printf("%d / %d\n", n, length);
 		PRINT_PROGRESS(str, length, n);
 	}
 
